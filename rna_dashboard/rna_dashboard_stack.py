@@ -1,57 +1,74 @@
+import os
+from constructs import Construct
 from aws_cdk import (
+    RemovalPolicy,
     Stack,
     Duration,
     aws_apigateway as apigateway,
-    CfnOutput,
     aws_lambda_python_alpha as lambda_alpha_,
     aws_lambda as _lambda,
     aws_certificatemanager as acm,
     aws_route53 as route53,
-    aws_route53_targets as targets
+    aws_route53_targets as targets,
+    aws_s3 as s3,
+    aws_s3_deployment as s3deploy
 )
-
-from constructs import Construct
-
-#TODO: import config somehow
+import boto3
+import glob
 from dataclasses import dataclass
-
-@dataclass
-class Config:
-    subdomain: str
-    domain: str
-
-cfg=Config( subdomain="rna", domain="crowdr.org" )
 
 
 class RNADashboardStack(Stack):
-
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, 
+                 scope: Construct, 
+                 construct_id: str, 
+                 cfg: dataclass, 
+                 **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        ##################### MAP DATA BUCKET #####################
+        bucket_name="rna-dashboard" 
+        folder_to_deploy = "./rna_dashboard/data/www/maps"
+
+        bucket = s3.Bucket(self,
+            "RNA_Dashboard__Data_Bucket",
+            bucket_name=bucket_name,
+            public_read_access=True,
+            removal_policy=RemovalPolicy.DESTROY,
+        )
+
+        #FIXME this doesnt work
+        deployment = s3deploy.BucketDeployment(self, 
+            "RNA_Dashboard__Data_Bucket_Deployment",
+            sources=[s3deploy.Source.asset(folder_to_deploy)],
+            destination_bucket=bucket,
+            destination_key_prefix="maps"
+        )
+
         
-        #FIXME: might need to buld some layers to make this work
-        # https://dev.to/aws-builders/build-aws-lambda-layers-with-aws-cdk-4nh5
+        '''
+        deployment.node.add_dependency(bucket)
 
+        # If you are referencing the filled bucket in another construct 
+        # that depends on the files already be there, 
+        # be sure to use deployment.deployedBucket. 
+        # This will ensure the bucket deployment 
+        # has finished before the resource that uses the bucket is created:
 
-        # WWW Lambda handler
+        ##################### WWW HANDLER LAMBDA #####################
         my_handler = lambda_alpha_.PythonFunction(
-            self, 
+            self,
             "RNA_Dashboard_WWW_Lambda",
             entry="./rna_dashboard/functions/www/",
             index="app.py",
             handler="handler",
-            timeout=Duration.seconds(30) ,
+            timeout=Duration.seconds(30),
             runtime=_lambda.Runtime.PYTHON_3_8,
             memory_size=2048,
-            # provisioned_concurrency_configuration_property=\
-            #     lambda_alpha_.CfnAlias.ProvisionedConcurrencyConfigurationProperty(
-            #         provisioned_concurrent_executions=2
-            #     )
-            )
+        )
 
-        ################################################################################
-        # REST API, Custom Domain
-        # following https://cloudbytes.dev/aws-academy/cdk-api-gateway-with-custom-domain
-        ################################################################################
+
+        ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################
 
         root_domain = cfg.domain
         subdomain = cfg.subdomain
@@ -59,20 +76,18 @@ class RNADashboardStack(Stack):
 
         # get the hosted zone
         my_hosted_zone = route53.HostedZone.from_lookup(
-            self,
-            "BusObservatoryAPI_HostedZone",
-            domain_name=root_domain 
-            )
+            self, "BusObservatoryAPI_HostedZone", domain_name=root_domain
+        )
 
-        # CREATE AN ACM CERTIFICATE
+        # create certificate
         my_certificate = acm.Certificate(
             self,
             "RNA_Dashboard_Stack_Certificate",
             domain_name=fully_qualified_domain_name,
-            validation=acm.CertificateValidation.from_dns(hosted_zone=my_hosted_zone)
+            validation=acm.CertificateValidation.from_dns(hosted_zone=my_hosted_zone),
         )
 
-        # EXPORT THE ARN OF THE CERTIFICATE
+        # export the certificate arn
         self.certificate_arn = my_certificate.certificate_arn
 
         # create REST API
@@ -85,10 +100,10 @@ class RNADashboardStack(Stack):
                 certificate=my_certificate,
                 security_policy=apigateway.SecurityPolicy.TLS_1_2,
                 endpoint_type=apigateway.EndpointType.EDGE,
-            )
+            ),
         )
 
-        # create A record
+        # create DNS A record
         route53.ARecord(
             self,
             "RNA_Dashboard__WWW_ApiRecord",
@@ -96,7 +111,4 @@ class RNADashboardStack(Stack):
             zone=my_hosted_zone,
             target=route53.RecordTarget.from_alias(targets.ApiGateway(my_api)),
         )
-
-        # outputs
-        CfnOutput(self, 'Hosted Zone', value=my_hosted_zone.zone_name);
-        CfnOutput(self, 'API Url', value=my_api.url);
+        '''

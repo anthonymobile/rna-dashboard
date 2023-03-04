@@ -1,107 +1,51 @@
-# Start the flask server by running:
-# python flask_example.py
-# head to http://127.0.0.1:5000/ in your browser to see the map displayed
+# this production version is deployed to AWS Lambda via the Serverless Framework
+# it loads the static content from S3
+# it doesnt work locally
+
 # thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, Response, request
 import serverless_wsgi
 
-import geopandas as gpd
+# import geopandas as gpd
 import folium
+import boto3
 
 app = Flask(__name__)
 
-
-# @app.route("/")
-# def fullscreen():
-#     m = folium.Map(
-#         location=(40.746759, -74.042197),
-#         zoom_start=16,
-#         tiles="cartodb positron"
-#         )
-#     return m.get_root().render()
+# Initialize the S3 client
+s3 = boto3.client('s3')
 
 
-@app.route("/")
-def fullscreen_parcels():
-
-    m = folium.Map(
-        location=(40.746759, -74.042197), zoom_start=16, tiles="cartodb positron"
+def fullscreen_map():
+    
+    map = folium.Map(
+        location=(40.746759, -74.042197), 
+        zoom_start=16, 
+        tiles="cartodb positron"
     )
 
-    parcels_gdf = gpd.read_file(
-        "maps/parcels/RNA_Parcel_Basemap_From_2019_JC_OpenData.shp"
-    )
+    #display RNA parcel basemap
     folium.GeoJson(
-        # data=parcels_gdf["geometry",'HNUM','HADD'],
-        data=parcels_gdf,
+        f"{request.base_url}/static/maps/parcels-2019-rna.geojson",
         popup=folium.GeoJsonPopup(
             fields=["HNUM", "HADD"], aliases=["Number", "Street"]
         ),
-    ).add_to(m)
+    ).add_to(map)
 
-    return m.get_root().render()
-
-
-# @app.route("/iframe")
-# def iframe():
-#     """Embed a map as an iframe on a page."""
-
-#     m = folium.Map()
-
-#     # set the iframe width and height
-#     m.get_root().width = "800px"
-#     m.get_root().height = "600px"
-#     iframe = m.get_root()._repr_html_()
-
-#     return render_template_string(
-#         """
-#             <!DOCTYPE html>
-#             <html>
-#                 <head></head>
-#                 <body>
-#                     <h1>Using an iframe</h1>
-#                     {{ iframe|safe }}
-#                 </body>
-#             </html>
-#         """,
-#         iframe=iframe,
-#     )
+    return map
 
 
-# @app.route("/components")
-# def components():
-#     """Extract map components and put those on a page."""
-#     m = folium.Map(
-#         width=800,
-#         height=600,
-#     )
+# Define a route to serve the static content
+@app.route('/static/<path:path>')
+def serve_static_content(path):
+    #FIXME: pass bucket name in from paramstore?
+    response = s3.get_object(Bucket="rna-dashboard", Key=path) 
+    return Response(response['Body'].read(), mimetype=response['ContentType'])
 
-#     m.get_root().render()
-#     header = m.get_root().header.render()
-#     body_html = m.get_root().html.render()
-#     script = m.get_root().script.render()
-
-#     return render_template_string(
-#         """
-#             <!DOCTYPE html>
-#             <html>
-#                 <head>
-#                     {{ header|safe }}
-#                 </head>
-#                 <body>
-#                     <h1>Using components</h1>
-#                     {{ body_html|safe }}
-#                     <script>
-#                         {{ script|safe }}
-#                     </script>
-#                 </body>
-#             </html>
-#         """,
-#         header=header,
-#         body_html=body_html,
-#         script=script,
-#     )
+@app.route("/")
+def homepage():
+    return fullscreen_map().get_root().render()
 
 
 #### WRAPPER ###############################################################################

@@ -20,60 +20,128 @@ s3 = boto3.client("s3")
 
 def fullscreen_map():
 
-    map = folium.Map(
+    m = folium.Map(
         location=(40.746759, -74.042197), zoom_start=16, tiles="cartodb positron"
     )
     
 
-    # display JC parcel basemap
+
+    # LAYER: Heights Parcels
     folium.GeoJson(
-        f"{request.base_url}/static/maps/parcels-2019-jersey-city.geojson",
+        f"{request.base_url}/static/maps/parcels/parcels-2019-heights.geojson",
         name="Parcels",
+        style_function=lambda feature: {
+            'fillColor': 'gray',
+            'fillOpacity': 0.1,
+            'color': 'gray',
+            'weight': 0.5,
+            'opacity': 0.5,
+            # 'dashArray': '5, 5'
+        },
+        popup=folium.GeoJsonPopup(
+            fields=["HNUM", "HADD"], aliases=["Number", "Street"]
+        ),
+    ).add_to(m)
+
+    # # LAYER: RNA Parcels
+    # folium.GeoJson(
+    #     f"{request.base_url}/static/maps/parcels/parcels-2019-rna.geojson",
+    #     name="RNA Parcels",
+    #     style_function=lambda feature: {
+    #         'fillColor': 'green',
+    #         'color': 'black',
+    #         'weight': 2,
+    #         # 'dashArray': '5, 5'
+    #     },
+    #     popup=folium.GeoJsonPopup(
+    #         fields=["HNUM", "HADD"], aliases=["Number", "Street"]
+    #     ),
+    # ).add_to(m)
+
+
+    # LAYER: Heights Building Footprints
+    folium.GeoJson(
+        f"{request.base_url}/static/maps/building-footprints/building-footprints-heights.geojson",
+        name="Building Footprints",
+        style_function=lambda feature: {
+            'fillColor': 'grey',
+            'color': 'black',
+            'weight': 0.5,
+            'dashArray': '3, 3'
+        },
         # popup=folium.GeoJsonPopup(
         #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
         # ),
-    ).add_to(map)
+    ).add_to(m)
+
+
+    # LAYER: RNA Boundaries
+    folium.GeoJson(
+        f"{request.base_url}/static/maps/boundaries-rna.geojson",
+        name="Parcels",
+        style_function=lambda feature: {
+            'fillColor': 'none',
+            'color': 'green',
+            'weight': 4,
+            'opacity': 0.5,
+            'dashArray': '2, 2'
+        },
+    ).add_to(m)
+
+    # Streetview in popup
+    #FIXME this works but the 2nd method is probably better for users, and we want to combine with othe data in the popup
+    #HOWTO methods are at https://www.mkrgeo-blog.com/open-street-view-with-python-folium-map/
+    class ClickForOneMarker(folium.ClickForMarker):
+
+        _template = Template(u"""
+        {% macro script(this, kwargs) %}
+        var new_mark = L.marker();
+        function newMarker(e){
+        new_mark.setLatLng(e.latlng).addTo({{this._parent.get_name()}});
+        new_mark.dragging.enable();
+        new_mark.on('dblclick', function(e){ {{this._parent.get_name()}}.removeLayer(e.target)})
+        var lat = e.latlng.lat.toFixed(4),
+        lng = e.latlng.lng.toFixed(4);
+        new_mark.bindPopup("<a href=https://www.google.com/maps?layer=c&cbll=" + lat + "," + lng + " target=blank >Google Street View</a>");
+        parent.document.getElementById("latitude").value = lat;
+        parent.document.getElementById("longitude").value =lng;
+        };
+        {{this._parent.get_name()}}.on('click', newMarker);
+        {% endmacro %}
+        """) # noqa
+
+    def __init__(self, popup=None):
+        super(ClickForOneMarker, self).__init__(popup)
+        self._name = 'ClickForOneMarker'
+
+
+    click_for_marker = ClickForOneMarker()
+
+    m.add_child(click_for_marker)
+
+    folium.LayerControl().add_to(m)
     
 
-    # # display RNA parcel basemap
-    # #FIXME doesnt work, bad geojson export?
+    # # display zoning map
     # folium.GeoJson(
-    #     f"{request.base_url}/static/maps/rna-parcels-2019.geojson",
-    #     name="RNA Parcels",
+    #     f"{request.base_url}/static/maps/zone-districts-unknown-jersey-city.geojson", #FIXME PATH
+    #     name="Zoning",
     #     # popup=folium.GeoJsonPopup(
     #     #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
     #     # ),
-    # ).add_to(map)
+    # ).add_to(m)
 
-    # display zoning map
-    folium.GeoJson(
-        f"{request.base_url}/static/maps/zone-districts-unknown-jersey-city.geojson",
-        name="Zoning",
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-        # ),
-    ).add_to(map)
+    # # display census map
+    # folium.GeoJson(
+    #     f"{request.base_url}/static/maps/tracts-blocks-2018-jersey-city.geojson", #FIXME PATH
+    #     name="Census Tracts and Block Groups",
+    #     # popup=folium.GeoJsonPopup(
+    #     #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
+    #     # ),
+    # ).add_to(m)
 
-    # display census map
-    folium.GeoJson(
-        f"{request.base_url}/static/maps/tracts-blocks-2018-jersey-city.geojson",
-        name="Census Tracts and Block Groups",
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-        # ),
-    ).add_to(map)
 
-    # display building footprints
-    folium.GeoJson(
-        f"{request.base_url}/static/maps/buildings-footprints-2018-jersey-city.geojson",
-        name="Building Footprints",
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-        # ),
-    ).add_to(map)
-
-    folium.LayerControl().add_to(map)
-
+    #FIXME the styling is terrible, and add my content (maybe load from a markdown file?)
     #TODO can we move this to a separate file?
     # via https://stackoverflow.com/questions/75493570/how-can-i-add-a-text-box-to-folium-with-more-or-less-the-same-behavior-as-the-l
     # Injecting custom css through branca macro elements and template, give it a name
@@ -150,11 +218,11 @@ def fullscreen_map():
     my_custom_style._template = Template(textbox_css)
 
     # Adding my_custom_style to the map
-    map.get_root().add_child(my_custom_style)
+    m.get_root().add_child(my_custom_style)
 
 
 
-    return map
+    return m
 
 
 # Define a route to serve the static content

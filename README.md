@@ -1,18 +1,23 @@
 # rna-dashboard
 
+## TESTING AND DEBUGGING
+
+### www lambda
+
+1. `cd rna_dashboard/functions/www`
+2. Start the flask server `python app-local.py`
+3. head to http://127.0.0.1:5000/ in your browser to see the map displayed
+
+
 ## TODO
 
 ### v 0.2
 
-
-
-- debug / solve bucket deployment
 - add layers to map
     - zoning map overlay
     - street centerlines
 - add a title https://stackoverflow.com/questions/75493570/how-can-i-add-a-text-box-to-folium-with-more-or-less-the-same-behavior-as-the-l
-
-
+- debug / solve bucket deployment
 - move to chilltownlabs domain
     - can just create an A record on gandi to point to the API?
         - update the CDK stack to reflect
@@ -37,12 +42,3 @@
         [lat, long],
         radius=200).add_to(map) #tk? how to scale the circle?
 
-## TESTING AND DEBUGGING
-
-### www lambda
-
-1. `cd rna_dashboard/functions/www`
-2. Start the flask server `python app.py`
-3. head to http://127.0.0.1:5000/ in your browser to see the map displayed
-# rna-dashboard
-# rna-dashboard

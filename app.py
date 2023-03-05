@@ -15,7 +15,7 @@ cfg = Config(subdomain="rna", domain="crowdr.org")
 app = cdk.App()
 RNADashboardStack(
     app, 
-    "RNADashboardStack",
+    "RNADashboardStack2",
     cfg=cfg,
     env=cdk.Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'), 

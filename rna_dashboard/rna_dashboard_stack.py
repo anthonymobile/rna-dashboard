@@ -1,7 +1,5 @@
-import os
 from constructs import Construct
 from aws_cdk import (
-    RemovalPolicy,
     Stack,
     Duration,
     aws_apigateway as apigateway,
@@ -13,8 +11,7 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_s3_deployment as s3deploy
 )
-import boto3
-import glob
+
 from dataclasses import dataclass
 
 
@@ -28,7 +25,9 @@ class RNADashboardStack(Stack):
 
         ##################### MAP DATA BUCKET #####################
         bucket_name="rna-dashboard" 
-        folder_to_deploy = "./rna_dashboard/data/www/maps"
+        #FIXME not sure which one makes local test and production work same
+        # folder_to_deploy = "./rna_dashboard/data/www/maps"
+        folder_to_deploy = "./rna_dashboard/data/www"
 
         bucket = s3.Bucket(self,
             "RNA_Dashboard__Data_Bucket",
@@ -40,17 +39,9 @@ class RNADashboardStack(Stack):
             "RNA_Dashboard__Data_Bucket_Deployment",
             sources=[s3deploy.Source.asset(folder_to_deploy)],
             destination_bucket=bucket,
-            destination_key_prefix="maps",
             # memory_limit=1024,
         )
-
         
-        # If you are referencing the filled bucket in another construct 
-        # that depends on the files already be there, 
-        # be sure to use deployment.deployedBucket. 
-        # This will ensure the bucket deployment 
-        # has finished before the resource that uses the bucket is created:
-
         ##################### WWW HANDLER LAMBDA #####################
         my_handler = lambda_alpha_.PythonFunction(
             self,
@@ -63,6 +54,9 @@ class RNADashboardStack(Stack):
             memory_size=2048,
         )
 
+        # grant the lambda read access to the bucket
+        bucket.grant_read(my_handler)
+        
 
         ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################
 

@@ -13,8 +13,6 @@
 
 ### v 0.2
 
-- add a title 
-- debug / solve bucket deployment
 - move to chilltownlabs domain
     - can just create an A record on gandi to point to the API?
         - update the CDK stack to reflect
@@ -27,6 +25,7 @@
 
 ### v 0.4
 - clickable parcel level query on JC open data (e.g. popup shows data from JC open data, NJparcels, zoning info, etc)
+https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
 
 
 ### FUTURE

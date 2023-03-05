@@ -5,4 +5,3 @@ requests
 Werkzeug==2.0.3
 lxml
 folium
-geopandas

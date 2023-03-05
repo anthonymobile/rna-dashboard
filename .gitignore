@@ -11,4 +11,4 @@ cdk.out
 
 # other
 .DS_Store
-.DS_Store
+.ipynb_checkpoints

@@ -13,10 +13,7 @@
 
 ### v 0.2
 
-- add layers to map
-    - zoning map overlay
-    - street centerlines
-- add a title https://stackoverflow.com/questions/75493570/how-can-i-add-a-text-box-to-folium-with-more-or-less-the-same-behavior-as-the-l
+- add a title 
 - debug / solve bucket deployment
 - move to chilltownlabs domain
     - can just create an A record on gandi to point to the API?

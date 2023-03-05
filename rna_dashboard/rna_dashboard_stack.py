@@ -34,21 +34,17 @@ class RNADashboardStack(Stack):
             "RNA_Dashboard__Data_Bucket",
             bucket_name=bucket_name,
             public_read_access=True,
-            removal_policy=RemovalPolicy.DESTROY,
         )
 
-        #FIXME this doesnt work
         deployment = s3deploy.BucketDeployment(self, 
             "RNA_Dashboard__Data_Bucket_Deployment",
             sources=[s3deploy.Source.asset(folder_to_deploy)],
             destination_bucket=bucket,
-            destination_key_prefix="maps"
+            destination_key_prefix="maps",
+            # memory_limit=1024,
         )
 
         
-        '''
-        deployment.node.add_dependency(bucket)
-
         # If you are referencing the filled bucket in another construct 
         # that depends on the files already be there, 
         # be sure to use deployment.deployedBucket. 
@@ -111,4 +107,3 @@ class RNADashboardStack(Stack):
             zone=my_hosted_zone,
             target=route53.RecordTarget.from_alias(targets.ApiGateway(my_api)),
         )
-        '''

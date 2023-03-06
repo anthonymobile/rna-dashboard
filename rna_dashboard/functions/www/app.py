@@ -24,33 +24,46 @@ logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 
+# route: homepage
+@app.route("/")
+def homepage():
+    return fullscreen_map().get_root().render()
 
-# #FIXME why is https://rna.crowdr.org/static/test.html working?
-# #FIXME replace this with Flask-S#
+# route: map layers
+
+# # this chatbot code works for html files, but it think its being bypassed and the static files are being served directly
+# # e.g. https://rna.crowdr.org/static/test.html works but none of the geojson does because the content type is wrong?
 # # Define a route to serve the static content
 # @app.route("/static/<path:path>")
 # def serve_static_content(path):
 #     s3 = boto3.resrouce("s3")
 #     logging.info(f"Fetching {path} from s3")
-#     # FIXME pass bucket name in, this causes huge problems
 #     response = s3.get_object(Bucket="rna-dashboard", Key=path) 
 #     return Response(response["Body"].read(), mimetype=response["ContentType"])
 
-#TODO test 
+#FIXME this error is a file not found error
+# json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+#TODO test this Chat GPT code
 @app.route('/static/<path:path>')
 def serve_geojson(path):
     s3 = boto3.resource('s3')
-    bucket_name = 'rna-dashboard'
+    bucket_name = 'rna-dashboard' # TODO pass bucket name in, this causes huge problems
     key = path
     obj = s3.Object(bucket_name, key)
     return send_file(obj.get()['Body'], mimetype='application/json')
 
+# #TODO2 try Flask-S3 
+# # https://flask-s3.readthedocs.io/en/latest/
+# from flask_s3 import FlaskS3
+# s3 = FlaskS3()
+#
+# def start_app():
+#     app = Flask(__name__)
+#     s3.init_app(app)
+#     return app
 
 
-
-@app.route("/")
-def homepage():
-    return fullscreen_map().get_root().render()
 
 
 #### WRAPPER ###############################################################################
@@ -61,6 +74,5 @@ def handler(event, context):
 
 #### DEBUG ###############################################################################
 # We only need this for local execution.
-
 if __name__ == "__main__":
     app.run(debug=True)

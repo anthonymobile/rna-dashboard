@@ -22,21 +22,19 @@ app = Flask(__name__)
 # Initialize the S3 client
 s3 = boto3.client('s3')
 
-
-
 @app.route("/")
 def homepage():
     return fullscreen_map().get_root().render()
 
-@app.route('/maps/<path:path>')
-def serve_geojson(path):
+# @app.route('/maps/<path:path>')
+# def serve_geojson(path):
 
-    filepath=f'../../data/www/{path}'
-    logging.info(filepath)
-    if not os.path.exists(filepath):
-        raise Exception(f'file not found: {filepath}')
-    else:
-        return send_file(filepath, mimetype='application/json')
+#     filepath=f'../../data/www/{path}'
+#     logging.info(filepath)
+#     if not os.path.exists(filepath):
+#         raise Exception(f'file not found: {filepath}')
+#     else:
+#         return send_file(filepath, mimetype='application/json')
 
 
 #### DEBUG ###############################################################################

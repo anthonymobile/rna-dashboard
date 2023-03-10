@@ -1,16 +1,5 @@
 # rna-dashboard
 
-## TODO MVP deployment
-
-- fix access to static files in S3
-    1. test alt geojson-only implementation of S3 static (staged in code)
-    2. try Flask-S3 implementation  https://flask-s3.readthedocs.io/en/latest/
-- move to chilltownlabs domain
-    - can just create an A record on gandi to point to the API?
-        - update the CDK stack to reflect
-    - or the reverse? migrate chilltown to route53 and point it back at gandi?
-
-
 ## TODO features to add
 
 ### resources

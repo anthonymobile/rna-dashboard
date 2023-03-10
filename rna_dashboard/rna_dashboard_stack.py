@@ -24,14 +24,14 @@ class RNADashboardStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         ##################### MAP DATA BUCKET #####################
-        bucket_name="rna-dashboard" 
+
         #FIXME not sure which one makes local test and production work same
         # folder_to_deploy = "./rna_dashboard/data/www/maps"
         folder_to_deploy = "./rna_dashboard/data/www"
 
         bucket = s3.Bucket(self,
             "RNA_Dashboard__Data_Bucket",
-            bucket_name=bucket_name,
+            bucket_name=cfg.bucket_name,
             public_read_access=True,
         )
 
@@ -52,6 +52,9 @@ class RNADashboardStack(Stack):
             timeout=Duration.seconds(30),
             runtime=_lambda.Runtime.PYTHON_3_8,
             memory_size=2048,
+            environment={ 
+                "BUCKETNAME": cfg.bucket_name
+            }
         )
 
         # grant the lambda read access to the bucket

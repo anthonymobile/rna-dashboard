@@ -20,7 +20,12 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+###################################################################################
+# APP
+###################################################################################
+
 app = Flask(__name__)
+bucket_name = os.environ['BUCKETNAME']
 
 ###################################################################################
 # HOMEPAGE
@@ -30,43 +35,33 @@ app = Flask(__name__)
 def homepage():
     return fullscreen_map().get_root().render()
 
-###################################################################################
-# MAP LAYERS
-###################################################################################
+# ###################################################################################
+# # MAP LAYERS
+# ###################################################################################
 
-#FIXME this error is a file not found error
-# json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+# # # ALT 2: json only #TODO test deployed
+# @app.route('/maps/<path:path>')
+# def serve_geojson(path):
 
-###################################################################################
-# ALT 1 DOESNT WORK
-###################################################################################
+#     s3 = boto3.resource('s3')
 
-# # this chatbot code works for html files, but it think its being bypassed and the maps files are being served directly
-# # e.g. https://rna.crowdr.org/maps/test.html works but none of the geojson does because the content type is wrong?
-# # Define a route to serve the maps content
-# @app.route("/maps/<path:path>")
-# def serve_map_content(path):
-#     s3 = boto3.resrouce("s3")
-#     logging.info(f"Fetching {path} from s3")
-#     response = s3.get_object(Bucket="rna-dashboard", Key=path) 
-#     return Response(response["Body"].read(), mimetype=response["ContentType"])e
+#     logging.info(f"request.base_url: {request.base_url}")
+#     logging.info(f"request.url: {request.url}")
+#     logging.info(f"fetching: {path} from s3://{bucket_name}")
 
-###################################################################################
-# ALT 2: json only #TODO test deployed
-###################################################################################
+#     # alt 1
+#     key = path
+#     obj = s3.Object(bucket_name, key)
+#     return send_file(obj.get()['Body'], mimetype='application/json')
 
-@app.route('/maps/<path:path>')
-def serve_geojson(path):
-    s3 = boto3.resource('s3')
-    bucket_name = 'rna-dashboard' # TODO pass bucket name in, this causes huge problems
-    key = path
-    obj = s3.Object(bucket_name, key)
-    return send_file(obj.get()['Body'], mimetype='application/json')
+#     # # alt 2
+#     # response = s3.get_object(Bucket=bucket_name, Key=path) 
+#     # return Response(response["Body"].read(), mimetype='application/json')
 
-###################################################################################
-# ALT 3: flask s3 #TODO try
-###################################################################################
 
+    
+
+# # ALT 3: flask s3 #TODO try
 # # https://flask-s3.readthedocs.io/en/latest/
 # from flask_s3 import FlaskS3
 # s3 = FlaskS3()
@@ -76,6 +71,16 @@ def serve_geojson(path):
 #     s3.init_app(app)
 #     return app
 
+# # ALT 1 DOESNT WORK
+# # this chatbot code works for html files, but it think its being bypassed and the maps files are being served directly
+# # e.g. https://rna.crowdr.org/maps/test.html works but none of the geojson does because the content type is wrong?
+# # Define a route to serve the maps content
+# @app.route("/maps/<path:path>")
+# def serve_map_content(path):
+#     s3 = boto3.resrouce("s3")
+#     logging.info(f"Fetching {path} from s3")
+#     response = s3.get_object(Bucket="rna-dashboard", Key=path) 
+#     return Response(response["Body"].read(), mimetype=response["ContentType"])
 
 
 ###################################################################################

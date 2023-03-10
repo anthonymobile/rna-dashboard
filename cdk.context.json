@@ -2,5 +2,9 @@
   "hosted-zone:account=703569250339:domainName=crowdr.org:region=us-east-1": {
     "Id": "/hostedzone/Z065658612QCDFJE46J08",
     "Name": "crowdr.org."
+  },
+  "hosted-zone:account=703569250339:domainName=chilltownlabs.com:region=us-east-1": {
+    "Id": "/hostedzone/Z01125621GG4KOM1EZO6K",
+    "Name": "chilltownlabs.com."
   }
 }

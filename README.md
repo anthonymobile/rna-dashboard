@@ -1,5 +1,43 @@
 # rna-dashboard
 
+## TODO MVP deployment
+
+- fix access to static files in S3
+    1. test alt geojson-only implementation of S3 static (staged in code)
+    2. try Flask-S3 implementation  https://flask-s3.readthedocs.io/en/latest/
+- move to chilltownlabs domain
+    - can just create an A record on gandi to point to the API?
+        - update the CDK stack to reflect
+    - or the reverse? migrate chilltown to route53 and point it back at gandi?
+
+
+## TODO features to add
+
+### resources
+- send clicked lat lon back to python 
+    - https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
+
+### punchlist
+- Add draw 200 foot radius (from centroid? Check code) on clickd
+- customize tooltip formatting
+        - Append a computed tooltip column with customised text https://towardsdatascience.com/using-folium-to-generate-choropleth-map-with-customised-tooltips-12e4cec42af2
+        - injecting HTML into a folium popup (see last comment) https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
+- cloropleth map
+    - https://towardsdatascience.com/using-folium-to-generate-choropleth-map-with-customised-tooltips-12e4cec42af2
+- Add draw 200 foot radius (from centroid? Check code) on click
+    - https://stackoverflow.com/questions/74520790/python-folium-circle-not-working-along-with-popup
+    - folium.Circle(
+        [lat, long],
+        radius=200).add_to(map) #tk? how to scale the circle?
+
+- JC API query on street address (in pupup with linked to records)
+    - API https://data.jerseycitynj.gov/api/v2/catalog/datasets/zoning-board-application-74-bowers-st-z22-040-2022/records?where=search%28%2274%20bowers%22%29&limit=10&offset=0&timezone=UTC
+- NJ parcels query
+- export vacants db to geojson and add layer
+— add 3d viewer, buildings layer in a 3d viewer
+- clickable SDL portal query (need to get API access via city planning)
+- local read/write postgis for adding our own content to map via geoalchemy2.
+
 ## TESTING AND DEBUGGING
 
 ### www lambda
@@ -7,34 +45,3 @@
 1. `cd rna_dashboard/functions/www`
 2. Start the flask server `python app-local.py`
 3. head to http://127.0.0.1:5000/ in your browser to see the map displayed
-
-
-## TODO
-
-### v 0.2
-
-- move to chilltownlabs domain
-    - can just create an A record on gandi to point to the API?
-        - update the CDK stack to reflect
-    - or the reverse? migrate chilltown to route53 and point it back at gandi?
-
-
-### v 0.3
-- build out UI / docs
-- user testing
-
-### v 0.4
-- clickable parcel level query on JC open data (e.g. popup shows data from JC open data, NJparcels, zoning info, etc)
-https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
-
-
-### FUTURE
-— add 3d viewer, buildings layer in a 3d viewer
-- clickable SDL portal query (need to get API access via city planning)
-- local read/write postgis for adding our own content to map via geoalchemy2.
-- click on property to draw 200 foot radius
-
-    folium.Circle(
-        [lat, long],
-        radius=200).add_to(map) #tk? how to scale the circle?
-

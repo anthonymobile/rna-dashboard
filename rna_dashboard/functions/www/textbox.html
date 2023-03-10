@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Textbox Project</title>
+        <title>Riverview Neighborhood Association Development Dashboard</title>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -27,15 +27,28 @@
 
     <body>
         <div id="textbox" class="textbox">
-        <div class="textbox-title">Textbox (draggable)</div>
-        <div class="textbox-content">
-            <p>You can put whatever content here.<br>You can create as many elements and positon them all over the map.</p>
-            <p>You can delete the script that makes it draggable and all script links that come with it.</p>
-            <p>You can add a link to a local CSS file in the head and past the css in it instead of here.</p>
-            <p>You can find a way to make it collapsible with JS or CSS, it's a normal HTML div after all.</p>
+            <div class="textbox-title">
+                Riverview Neighborhood Association Development Dashboard
+            </div>
+            <div class="textbox-content">
+                <p>
+                    This site is provided for residents of Jersey City Heights for informational purposes only. All information is obtained from public sources. The Riverview Neighborhood Association makes no guarantees as to accuracty or timeliness of any information contained on this site.
+                </p>
+            </div>
         </div>
+
+        <!-- <div id="textbox2" class="textbox">
+            <div class="textbox-title">
+                Riverview Neighborhood Association Development Dashboard
+            </div>
+            <div class="textbox-content">
+                <p>You can put whatever content here.<br>You can create as many elements and positon them all over the map.</p>
+                <p>You can delete the script that makes it draggable and all script links that come with it.</p>
+                <p>You can add a link to a local CSS file in the head and past the css in it instead of here.</p>
+                <p>You can find a way to make it collapsible with JS or CSS, it's a normal HTML div after all.</p>
+            </div>
         </div>
-    
+     -->
     </body>
     </html>
 
@@ -53,14 +66,16 @@
         font-size:14px;
         right: 20px;
         bottom: 20px;
-        color: orange;
+        width: 25%;
+        color: rgb(255, 255, 255);
     }
     .textbox .textbox-title {
-        color: darkorange;
+        color: rgb(0, 0, 0);
         text-align: center;
         margin-bottom: 5px;
         font-weight: bold;
         font-size: 22px;
         }
+        
     </style>
     {% endmacro %}

@@ -1,6 +1,10 @@
 # rna-dashboard
 thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
+## DEBUGGING STATUS AS OF 2023-03-11
+
+waiting for Stack Overflow help https://stackoverflow.com/questions/75706032/why-is-flask-running-on-aws-lambda-corrupting-geojson-files-served-using-static
+
 ## TODO features to add
 
 ### resources

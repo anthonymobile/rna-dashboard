@@ -138,6 +138,7 @@ def fullscreen_map():
     # Injecting custom css through branca macro elements
     # via https://stackoverflow.com/questions/75493570/how-can-i-add-a-text-box-to-folium-with-more-or-less-the-same-behavior-as-the-l
     textbox_css = open("textbox.html").read()
+    logging.info(f"textbox_css: {textbox_css}")
     my_custom_style = MacroElement()
     my_custom_style._template = Template(textbox_css)
     m.get_root().add_child(my_custom_style)

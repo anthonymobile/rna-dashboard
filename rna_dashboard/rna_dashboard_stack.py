@@ -8,8 +8,8 @@ from aws_cdk import (
     aws_certificatemanager as acm,
     aws_route53 as route53,
     aws_route53_targets as targets,
-    aws_s3 as s3,
-    aws_s3_deployment as s3deploy
+    # aws_s3 as s3,
+    # aws_s3_deployment as s3deploy
 )
 
 from dataclasses import dataclass
@@ -23,24 +23,22 @@ class RNADashboardStack(Stack):
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        ##################### MAP DATA BUCKET #####################
+        # ##################### MAP DATA BUCKET #####################
 
-        #FIXME not sure which one makes local test and production work same
-        # folder_to_deploy = "./rna_dashboard/data/www/maps"
-        folder_to_deploy = "./rna_dashboard/data/www"
+        # folder_to_deploy = "./rna_dashboard/data/www"
 
-        bucket = s3.Bucket(self,
-            "RNA_Dashboard__Data_Bucket",
-            bucket_name=cfg.bucket_name,
-            public_read_access=True,
-        )
+        # bucket = s3.Bucket(self,
+        #     "RNA_Dashboard__Data_Bucket",
+        #     bucket_name=cfg.bucket_name,
+        #     public_read_access=True,
+        # )
 
-        deployment = s3deploy.BucketDeployment(self, 
-            "RNA_Dashboard__Data_Bucket_Deployment",
-            sources=[s3deploy.Source.asset(folder_to_deploy)],
-            destination_bucket=bucket,
-            # memory_limit=1024,
-        )
+        # deployment = s3deploy.BucketDeployment(self, 
+        #     "RNA_Dashboard__Data_Bucket_Deployment",
+        #     sources=[s3deploy.Source.asset(folder_to_deploy)],
+        #     destination_bucket=bucket,
+        #     # memory_limit=1024,
+        # )
         
         ##################### WWW HANDLER LAMBDA #####################
         my_handler = lambda_alpha_.PythonFunction(
@@ -57,8 +55,8 @@ class RNADashboardStack(Stack):
             }
         )
 
-        # grant the lambda read access to the bucket
-        bucket.grant_read(my_handler)
+        # # grant the lambda read access to the bucket
+        # bucket.grant_read(my_handler)
         
 
         ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################

@@ -6,8 +6,8 @@
 # head to http://127.0.0.1:5000/ in your browser to see the map displayed
 # thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
-import os
-from flask import Flask, send_file
+# import os
+from flask import Flask #, send_file
 
 import boto3
 from app import fullscreen_map
@@ -17,7 +17,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #this should mimic the behavior of the production app
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='/geojson',
+            static_folder='geojson'
+             )
 
 # Initialize the S3 client
 s3 = boto3.client('s3')

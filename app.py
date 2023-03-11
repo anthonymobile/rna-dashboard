@@ -21,7 +21,7 @@ cfg = Config(
 app = cdk.App()
 RNADashboardStack(
     app, 
-    "RNADashboardStack",
+    "rna-dashboard-stack",
     cfg=cfg,
     env=cdk.Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'), 

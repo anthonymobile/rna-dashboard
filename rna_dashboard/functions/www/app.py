@@ -4,9 +4,9 @@
 
 # thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
-from flask import Flask, render_template_string, Response, request, send_file
+from flask import Flask, send_from_directory
 import serverless_wsgi
-import boto3
+# import boto3
 
 from Map import fullscreen_map
 
@@ -24,8 +24,11 @@ logger.setLevel(logging.INFO)
 # APP
 ###################################################################################
 
-app = Flask(__name__)
-bucket_name = os.environ['BUCKETNAME']
+app = Flask(__name__,
+            static_url_path='/geojson',
+            static_folder='geojson'
+             )
+# bucket_name = os.environ['BUCKETNAME']
 
 ###################################################################################
 # HOMEPAGE

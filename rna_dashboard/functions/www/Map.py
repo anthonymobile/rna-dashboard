@@ -24,7 +24,6 @@ def fullscreen_map():
     heights_building_footprints_url = f"{request.base_url}/maps/heights-building-footprints.geojson"
     logging.info(f"heights_building_footprints_url: {heights_building_footprints_url}")
     folium.GeoJson(
-        # "maps/heights-building-footprints.geojson",
         heights_building_footprints_url,
         name="Building Footprints",
         style_function=lambda feature: {
@@ -44,7 +43,6 @@ def fullscreen_map():
     heights_parcels_url = f"{request.base_url}/maps/heights-parcels.geojson"
     logging.info(f"heights_parcels_url: {heights_parcels_url}")
     folium.GeoJson(
-        # "maps/heights-parcels.geojson",
         heights_parcels_url,
         name="Parcels",
         style_function=lambda feature: {
@@ -123,7 +121,6 @@ def fullscreen_map():
     boundaries_rna_url = f"{request.base_url}/maps/boundaries-rna.geojson"
     logging.info(f"heights_parcels_url: {boundaries_rna_url}")
     folium.GeoJson(
-        # "static/boundaries-rna.geojson",
         boundaries_rna_url,
         name="Parcels",
         style_function=lambda feature: {

@@ -18,7 +18,9 @@ logger.setLevel(logging.INFO)
 
 
 ######################## APP ########################
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder="maps", 
+            static_url_path="/maps")
 
 ######################## HOMEPAGE ########################
 @app.route("/")

@@ -1,8 +1,8 @@
 from branca.element import Template, MacroElement
 import folium
-# from flask import request
+from flask import request
 
-# ENABLE LOGGING
+# Enable logging for lambda
 # https://docs.aws.amazon.com/lambda/latest/dg/python-logging.html#python-logging-lib
 
 import logging
@@ -21,9 +21,11 @@ def fullscreen_map():
     ############################################################
 
     # Heights Building Footprints
+    heights_building_footprints_url = f"{request.base_url}/maps/heights-building-footprints.geojson"
+    logging.info(f"heights_building_footprints_url: {heights_building_footprints_url}")
     folium.GeoJson(
-        "static/heights-building-footprints.geojson",
-        #f"{request.base_url}/static/heights-building-footprints.geojson",
+        # "maps/heights-building-footprints.geojson",
+        heights_building_footprints_url,
         name="Building Footprints",
         style_function=lambda feature: {
             'fillColor': 'grey',
@@ -39,9 +41,11 @@ def fullscreen_map():
 
 
     # Heights Parcels
+    heights_parcels_url = f"{request.base_url}/maps/heights-parcels.geojson"
+    logging.info(f"heights_parcels_url: {heights_parcels_url}")
     folium.GeoJson(
-        "static/heights-parcels.geojson",
-        # f"{request.base_url}/static/heights-parcels.geojson",
+        # "maps/heights-parcels.geojson",
+        heights_parcels_url,
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'gray',
@@ -116,9 +120,11 @@ def fullscreen_map():
 
 
     # RNA Boundaries
+    boundaries_rna_url = f"{request.base_url}/maps/boundaries-rna.geojson"
+    logging.info(f"heights_parcels_url: {boundaries_rna_url}")
     folium.GeoJson(
-        "static/boundaries-rna.geojson",
-        #f"{request.base_url}/static/boundaries-rna.geojson",
+        # "static/boundaries-rna.geojson",
+        boundaries_rna_url,
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'none',
@@ -128,18 +134,6 @@ def fullscreen_map():
             'dashArray': '2, 2'
         },
     ).add_to(m)
-
-    # # Zones
-    # folium.GeoJson(
-    #     f"{request.base_url}/static/jc-zoning-map.geojson", #FIXME PATH
-    #     show=False,
-    #     name="Zoning",
-    #     tooltip='<b>Citywide Zoning Tooltip</b><br><br>What should go here?',
-    #     # popup=folium.GeoJsonPopup(
-    #     #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-    #     # ),
-    # ).add_to(m)
-
 
     ############################################################
     # FLOATING TEXTBOX

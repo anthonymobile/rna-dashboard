@@ -17,7 +17,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #this should mimic the behavior of the production app
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder="maps", 
+            static_url_path="/maps")
 
 
 @app.route("/")

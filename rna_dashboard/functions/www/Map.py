@@ -1,10 +1,10 @@
 from branca.element import Template, MacroElement
 import folium
-from flask import request
+# from flask import request
 
 # ENABLE LOGGING
 # https://docs.aws.amazon.com/lambda/latest/dg/python-logging.html#python-logging-lib
-import os
+
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,8 +22,8 @@ def fullscreen_map():
 
     # Heights Building Footprints
     folium.GeoJson(
-        "geojson/heights-building-footprints.geojson",
-        #f"{request.base_url}/geojson/heights-building-footprints.geojson",
+        "static/heights-building-footprints.geojson",
+        #f"{request.base_url}/static/heights-building-footprints.geojson",
         name="Building Footprints",
         style_function=lambda feature: {
             'fillColor': 'grey',
@@ -40,8 +40,8 @@ def fullscreen_map():
 
     # Heights Parcels
     folium.GeoJson(
-        "geojson/heights-parcels.geojson",
-        # f"{request.base_url}/geojson/heights-parcels.geojson",
+        "static/heights-parcels.geojson",
+        # f"{request.base_url}/static/heights-parcels.geojson",
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'gray',
@@ -117,8 +117,8 @@ def fullscreen_map():
 
     # RNA Boundaries
     folium.GeoJson(
-        "geojson/boundaries-rna.geojson",
-        #f"{request.base_url}/geojson/boundaries-rna.geojson",
+        "static/boundaries-rna.geojson",
+        #f"{request.base_url}/static/boundaries-rna.geojson",
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'none',
@@ -131,7 +131,7 @@ def fullscreen_map():
 
     # # Zones
     # folium.GeoJson(
-    #     f"{request.base_url}/geojson/jc-zoning-map.geojson", #FIXME PATH
+    #     f"{request.base_url}/static/jc-zoning-map.geojson", #FIXME PATH
     #     show=False,
     #     name="Zoning",
     #     tooltip='<b>Citywide Zoning Tooltip</b><br><br>What should go here?',

@@ -50,9 +50,6 @@ class RNADashboardStack(Stack):
             timeout=Duration.seconds(30),
             runtime=_lambda.Runtime.PYTHON_3_8,
             memory_size=2048,
-            environment={ 
-                "BUCKETNAME": cfg.bucket_name
-            }
         )
 
         # # grant the lambda read access to the bucket

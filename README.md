@@ -3,13 +3,14 @@ thank you https://realpython.com/python-folium-web-maps-from-data/ for the styli
 
 ## DEBUGGING STATUS AS OF 2023-03-11
 
+### stack :rna-dashboard-stack
 waiting for Stack Overflow help https://stackoverflow.com/questions/75706032/why-is-flask-running-on-aws-lambda-corrupting-geojson-files-served-using-static
+
+### stack: rna2-dashboard-stack
+testing using `send_file` for `/maps/<path:path>`
 
 ## TODO features to add
 
-### resources
-- send clicked lat lon back to python 
-    - https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
 
 ### punchlist
 - Add draw 200 foot radius (from centroid? Check code) on clickd
@@ -32,6 +33,11 @@ waiting for Stack Overflow help https://stackoverflow.com/questions/75706032/why
 - clickable SDL portal query (need to get API access via city planning)
 - local read/write postgis for adding our own content to map via geoalchemy2.
 
+### resources
+- send clicked lat lon back to python 
+    - https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
+
+
 ## TESTING AND DEBUGGING
 
 ### www lambda
@@ -40,4 +46,4 @@ waiting for Stack Overflow help https://stackoverflow.com/questions/75706032/why
 2. Start the flask server `python app-local.py`
 3. head to http://127.0.0.1:5000/ in your browser to see the map displayed
 
-
+or jsut run `./local.sh` from the project root

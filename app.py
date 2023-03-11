@@ -9,19 +9,17 @@ from dataclasses import dataclass
 class Config:
     subdomain: str
     domain: str
-    bucket_name: str
 
 cfg = Config(
-    subdomain="rna", 
-    domain="chilltownlabs.com",
-    bucket_name="rna-dashboard-bucket"
+    subdomain="rna2", 
+    domain="chilltownlabs.com"
     )
 
 ##################### APP #####################
 app = cdk.App()
 RNADashboardStack(
     app, 
-    "rna-dashboard-stack",
+    "rna2-dashboard-stack",
     cfg=cfg,
     env=cdk.Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'), 

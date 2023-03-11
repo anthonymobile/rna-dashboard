@@ -1,4 +1,5 @@
 # rna-dashboard
+thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
 ## TODO features to add
 
@@ -34,3 +35,5 @@
 1. `cd rna_dashboard/functions/www`
 2. Start the flask server `python app-local.py`
 3. head to http://127.0.0.1:5000/ in your browser to see the map displayed
+
+

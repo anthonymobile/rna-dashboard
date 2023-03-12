@@ -11,7 +11,7 @@ class Config:
     domain: str
 
 cfg = Config(
-    subdomain="rna2", 
+    subdomain="rna3", 
     domain="chilltownlabs.com"
     )
 
@@ -19,7 +19,7 @@ cfg = Config(
 app = cdk.App()
 RNADashboardStack(
     app, 
-    "rna2-dashboard-stack",
+    f"{cfg.subdomain}-dashboard-stack",
     cfg=cfg,
     env=cdk.Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'), 

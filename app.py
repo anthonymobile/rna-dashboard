@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
-import os
+import os, json
 import aws_cdk as cdk
 from rna_dashboard.rna_dashboard_stack import RNADashboardStack
+from types import SimpleNamespace
 
 ##################### CONFIG #####################
-from dataclasses import dataclass
-@dataclass
-class Config:
-    subdomain: str
-    domain: str
-
-cfg = Config(
-    subdomain="rna6", 
-    domain="chilltownlabs.com"
-    )
+with open('config/config.json', 'r') as f:
+    cfg_data = f.read()
+cfg = SimpleNamespace(**json.loads(cfg_data))
+cfg.stack_name = f"{cfg.subdomain}-dashboard-stack"
+cfg.bucket_name = f"{cfg.subdomain}-dashboard-data"
+cfg.region=os.getenv('CDK_DEFAULT_REGION')
+print(cfg)
 
 ##################### APP #####################
 app = cdk.App()
 RNADashboardStack(
     app, 
-    f"{cfg.subdomain}-dashboard-stack",
+    cfg.stack_name,
     cfg=cfg,
     env=cdk.Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'), 

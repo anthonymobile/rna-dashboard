@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def fullscreen_map():
+def fullscreen_map(bucket_url):
 
     m = folium.Map(
         location=(40.746759, -74.042197), zoom_start=16, tiles="cartodb positron"
@@ -72,7 +72,7 @@ def fullscreen_map():
     # ).add_to(m)
     
     # RNA Boundaries
-    boundaries_rna_url = f"{request.base_url}/maps/boundaries-rna.geojson"
+    boundaries_rna_url = f"{bucket_url}/maps/boundaries-rna.geojson"
     logging.info(f"heights_parcels_url: {boundaries_rna_url}")
     folium.GeoJson(
         boundaries_rna_url,

@@ -5,11 +5,14 @@ import serverless_wsgi
 
 from Map import fullscreen_map
 
+import os
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
+
+bucket_url=os.getenv('BUCKET_URL')
 
 @app.route('/maps/<path:path>')
 def map_layers(path): 
@@ -21,7 +24,7 @@ def map_layers(path):
 
 @app.route("/")
 def homepage():
-    return fullscreen_map().get_root().render()
+    return fullscreen_map(bucket_url).get_root().render()
 
 def handler(event, context):
     return serverless_wsgi.handle_request(app, event, context)

@@ -8,19 +8,37 @@ from aws_cdk import (
     aws_certificatemanager as acm,
     aws_route53 as route53,
     aws_route53_targets as targets,
+    aws_s3 as s3,
+    aws_s3_deployment as s3deploy,
 
 )
-
-from dataclasses import dataclass
+import os
+from types import SimpleNamespace
 
 class RNADashboardStack(Stack):
     def __init__(self, 
                  scope: Construct, 
                  construct_id: str, 
-                 cfg: dataclass, 
+                 cfg: SimpleNamespace, 
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        ##################### MAP DATA BUCKET #####################
+        bucket_name=cfg.stack_name 
+        folder_to_deploy = "rna_dashboard/data/www"
+
+        bucket = s3.Bucket(self,
+            f"{cfg.stack_name}__Data_Bucket",
+            bucket_name=bucket_name,
+            public_read_access=True,
+        )
+
+        deployment = s3deploy.BucketDeployment(self, 
+            f"{cfg.stack_name}__Data_Bucket_Deployment",
+            sources=[s3deploy.Source.asset(folder_to_deploy)],
+            destination_bucket=bucket,
+            # memory_limit=1024,
+        )
 
         ##################### WWW HANDLER LAMBDA #####################
         my_handler = lambda_alpha_.PythonFunction(
@@ -31,8 +49,13 @@ class RNADashboardStack(Stack):
             handler="handler",
             timeout=Duration.seconds(60),
             runtime=_lambda.Runtime.PYTHON_3_8,
-            memory_size=2048, #FIXME this can be reduced a lot maybe as far as 256
+            memory_size=256, #FIXME rightsize memory using Lambda Insights,
+            environment={"BUCKET_NAME": cfg.bucket_name,
+                         "BUCKET_URL": f"https://{cfg.bucket_name}.s3.{cfg.region}.amazonaws.com"
+                         }
         )
+
+        my_handler.node.add_dependency(deployment)
 
 
         ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################

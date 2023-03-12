@@ -11,7 +11,7 @@ class Config:
     domain: str
 
 cfg = Config(
-    subdomain="rna3", 
+    subdomain="rna6", 
     domain="chilltownlabs.com"
     )
 

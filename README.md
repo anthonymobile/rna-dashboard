@@ -17,6 +17,13 @@ testing using `send_file` for `/maps/<path:path>`
 - customize tooltip formatting
         - Append a computed tooltip column with customised text https://towardsdatascience.com/using-folium-to-generate-choropleth-map-with-customised-tooltips-12e4cec42af2
         - injecting HTML into a folium popup (see last comment) https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
+
+
+another idea = here
+
+
+
+
 - cloropleth map
     - https://towardsdatascience.com/using-folium-to-generate-choropleth-map-with-customised-tooltips-12e4cec42af2
 - Add draw 200 foot radius (from centroid? Check code) on click

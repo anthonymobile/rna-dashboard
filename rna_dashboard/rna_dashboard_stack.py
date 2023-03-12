@@ -13,7 +13,6 @@ from aws_cdk import (
 
 from dataclasses import dataclass
 
-
 class RNADashboardStack(Stack):
     def __init__(self, 
                  scope: Construct, 
@@ -30,9 +29,9 @@ class RNADashboardStack(Stack):
             entry="./rna_dashboard/functions/www/",
             index="app.py",
             handler="handler",
-            timeout=Duration.seconds(30),
+            timeout=Duration.seconds(60),
             runtime=_lambda.Runtime.PYTHON_3_8,
-            memory_size=2048,
+            memory_size=2048, #FIXME this can be reduced a lot maybe as far as 256
         )
 
 
@@ -59,6 +58,7 @@ class RNADashboardStack(Stack):
         self.certificate_arn = my_certificate.certificate_arn
 
         # create REST API
+        # TODO lambda integration options? https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/LambdaIntegrationOptions.html#lambdaintegrationoptions
         my_api = apigateway.LambdaRestApi(
             self,
             "RNA_Dashboard_WWW_ApiGateway",

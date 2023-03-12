@@ -20,55 +20,70 @@ def fullscreen_map():
     # layers stack in order they are added (last=top)
     ############################################################
 
-    # Heights Building Footprints
-    heights_building_footprints_url = f"{request.base_url}/maps/heights-building-footprints.geojson"
-    logging.info(f"heights_building_footprints_url: {heights_building_footprints_url}")
-    folium.GeoJson(
-        heights_building_footprints_url,
-        name="Building Footprints",
-        style_function=lambda feature: {
-            'fillColor': 'grey',
-            'color': 'black',
-            'weight': 0.5,
-            'dashArray': '3, 3'
-        },
-        # tooltip='<b>Heights Bulding Footprints Tooltip</b><br><br>What should go here?',
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-        # ),
-    ).add_to(m)
+    # # Heights Building Footprints
+    # heights_building_footprints_url = f"{request.base_url}/maps/heights-building-footprints.geojson"
+    # logging.info(f"heights_building_footprints_url: {heights_building_footprints_url}")
+    # folium.GeoJson(
+    #     heights_building_footprints_url,
+    #     name="Building Footprints",
+    #     style_function=lambda feature: {
+    #         'fillColor': 'grey',
+    #         'color': 'black',
+    #         'weight': 0.5,
+    #         'dashArray': '3, 3'
+    #     },
+    #     # tooltip='<b>Heights Bulding Footprints Tooltip</b><br><br>What should go here?',
+    #     # popup=folium.GeoJsonPopup(
+    #     #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
+    #     # ),
+    # ).add_to(m)
 
+     
+    # # Heights Parcels
+    # heights_parcels_url = f"{request.base_url}/maps/heights-parcels.geojson"
+    # logging.info(f"heights_parcels_url: {heights_parcels_url}")
+    # folium.GeoJson(
+    #     heights_parcels_url,
+    #     name="Parcels",
+    #     style_function=lambda feature: {
+    #         'fillColor': 'gray',
+    #         'fillOpacity': 0.1,
+    #         'color': 'gray',
+    #         'weight': 0.5,
+    #         'opacity': 0.5,
+    #         # 'dashArray': '5, 5'
+    #     },
+    #     #FIXME is there a way to combine these two approaches — e.g. inject fields but also specify the HTML?
+    #     # see last comment for popup html injection
+    #     # https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
 
-    # Heights Parcels
-    heights_parcels_url = f"{request.base_url}/maps/heights-parcels.geojson"
-    logging.info(f"heights_parcels_url: {heights_parcels_url}")
+    #     # # simple HTML tooltip
+    #     # tooltip='<b>Heights Parcel Tooltip</b><br><br>What should go here?',
+
+    #     # fields in HTML tooltip
+    #     tooltip=folium.features.GeoJsonTooltip(
+    #         fields=["HNUM", "HADD", "BLOCK","LOT"], 
+    #         aliases=["Number", "Street", "Block", "Lot"]
+    #     ),
+
+    #     # popup=folium.GeoJsonPopup(
+    #     #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
+    #     # ),
+    # ).add_to(m)
+    
+    # RNA Boundaries
+    boundaries_rna_url = f"{request.base_url}/maps/boundaries-rna.geojson"
+    logging.info(f"heights_parcels_url: {boundaries_rna_url}")
     folium.GeoJson(
-        heights_parcels_url,
+        boundaries_rna_url,
         name="Parcels",
         style_function=lambda feature: {
-            'fillColor': 'gray',
-            'fillOpacity': 0.1,
-            'color': 'gray',
-            'weight': 0.5,
+            'fillColor': 'none',
+            'color': 'green',
+            'weight': 4,
             'opacity': 0.5,
-            # 'dashArray': '5, 5'
+            'dashArray': '2, 2'
         },
-        #FIXME is there a way to combine these two approaches — e.g. inject fields but also specify the HTML?
-        # see last comment for popup html injection
-        # https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
-
-        # # simple HTML tooltip
-        # tooltip='<b>Heights Parcel Tooltip</b><br><br>What should go here?',
-
-        # fields in HTML tooltip
-        tooltip=folium.features.GeoJsonTooltip(
-            fields=["HNUM", "HADD", "BLOCK","LOT"], 
-            aliases=["Number", "Street", "Block", "Lot"]
-        ),
-
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
-        # ),
     ).add_to(m)
 
     # # TODO add cloropleth? dwelling units /acre??
@@ -86,51 +101,37 @@ def fullscreen_map():
     # ).add_to(m)
 
 
-    #FIXME: How to combine with the parcel pop-up or stop from overriding
-    # ############################################################
-    # POPUP: Street View access like on-click feature
-    # https://www.mkrgeo-blog.com/open-street-view-with-python-folium-map/
-    # ############################################################
+    # #FIXME: How to combine with the parcel pop-up or stop from overriding
+    # # ############################################################
+    # # POPUP: Street View access like on-click feature
+    # # https://www.mkrgeo-blog.com/open-street-view-with-python-folium-map/
+    # # ############################################################
  
-    class LatLngPopup(MacroElement):
-        _template = Template(u"""
-        {% macro script(this, kwargs) %}
-        var {{this.get_name()}} = L.popup();
-        function latLngPop(e) {
-        data = e.latlng.lat.toFixed(4) + "," + e.latlng.lng.toFixed(4);
-        {{this.get_name()}}
-        .setLatLng(e.latlng)
-        .setContent( "<H1>LatLngPopup</H1><a href=https://www.google.com/maps?layer=c&cbll=" + data + " target=blank >Google Streetview</a>")
-        .openOn({{this._parent.get_name()}})
-        }
-        {{this._parent.get_name()}}.on('click', latLngPop);
+    # class LatLngPopup(MacroElement):
+    #     _template = Template(u"""
+    #     {% macro script(this, kwargs) %}
+    #     var {{this.get_name()}} = L.popup();
+    #     function latLngPop(e) {
+    #     data = e.latlng.lat.toFixed(4) + "," + e.latlng.lng.toFixed(4);
+    #     {{this.get_name()}}
+    #     .setLatLng(e.latlng)
+    #     .setContent( "<H1>LatLngPopup</H1><a href=https://www.google.com/maps?layer=c&cbll=" + data + " target=blank >Google Streetview</a>")
+    #     .openOn({{this._parent.get_name()}})
+    #     }
+    #     {{this._parent.get_name()}}.on('click', latLngPop);
 
-        {% endmacro %}
-        """) # noqa
+    #     {% endmacro %}
+    #     """) # noqa
 
-        def __init__(self):
-            super(LatLngPopup, self).__init__()
-            self._name = 'LatLngPopup'
+    #     def __init__(self):
+    #         super(LatLngPopup, self).__init__()
+    #         self._name = 'LatLngPopup'
 
-    latlon = LatLngPopup()
+    # latlon = LatLngPopup()
 
-    m.add_child(latlon)
+    # m.add_child(latlon)
 
 
-    # RNA Boundaries
-    boundaries_rna_url = f"{request.base_url}/maps/boundaries-rna.geojson"
-    logging.info(f"heights_parcels_url: {boundaries_rna_url}")
-    folium.GeoJson(
-        boundaries_rna_url,
-        name="Parcels",
-        style_function=lambda feature: {
-            'fillColor': 'none',
-            'color': 'green',
-            'weight': 4,
-            'opacity': 0.5,
-            'dashArray': '2, 2'
-        },
-    ).add_to(m)
 
     ############################################################
     # FLOATING TEXTBOX
@@ -138,7 +139,6 @@ def fullscreen_map():
     # Injecting custom css through branca macro elements
     # via https://stackoverflow.com/questions/75493570/how-can-i-add-a-text-box-to-folium-with-more-or-less-the-same-behavior-as-the-l
     textbox_css = open("textbox.html").read()
-    logging.info(f"textbox_css: {textbox_css}")
     my_custom_style = MacroElement()
     my_custom_style._template = Template(textbox_css)
     m.get_root().add_child(my_custom_style)

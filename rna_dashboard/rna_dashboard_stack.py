@@ -24,7 +24,7 @@ class RNADashboardStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         ##################### MAP DATA BUCKET #####################
-        bucket_name=cfg.stack_name 
+        bucket_name=cfg.bucket_name 
         folder_to_deploy = "rna_dashboard/data/www"
 
         bucket = s3.Bucket(self,

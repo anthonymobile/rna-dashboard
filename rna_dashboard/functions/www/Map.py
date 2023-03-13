@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 def fullscreen_map(bucket_url):
 
     m = folium.Map(
-        location=(40.746759, -74.042197), zoom_start=16, tiles="cartodb positron"
+        location=(40.746759, -74.042197), zoom_start=16, tiles="stamentoner"
     )
 
     ############################################################
@@ -20,62 +20,57 @@ def fullscreen_map(bucket_url):
     # layers stack in order they are added (last=top)
     ############################################################
 
-    # # Heights Building Footprints
-    # heights_building_footprints_url = f"{request.base_url}/maps/heights-building-footprints.geojson"
-    # logging.info(f"heights_building_footprints_url: {heights_building_footprints_url}")
-    # folium.GeoJson(
-    #     heights_building_footprints_url,
-    #     name="Building Footprints",
-    #     style_function=lambda feature: {
-    #         'fillColor': 'grey',
-    #         'color': 'black',
-    #         'weight': 0.5,
-    #         'dashArray': '3, 3'
-    #     },
-    #     # tooltip='<b>Heights Bulding Footprints Tooltip</b><br><br>What should go here?',
-    #     # popup=folium.GeoJsonPopup(
-    #     #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-    #     # ),
-    # ).add_to(m)
+    # Heights Building Footprints
+    folium.GeoJson(
+        f"{bucket_url}/maps/heights-building-footprints.geojson",
+        name="Building Footprints",
+        style_function=lambda feature: {
+            'fillColor': 'grey',
+            'color': 'black',
+            'weight': 0.5,
+            'dashArray': '3, 3'
+        },
+        # tooltip='<b>Heights Bulding Footprints Tooltip</b><br><br>What should go here?',
+        # popup=folium.GeoJsonPopup(
+        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
+        # ),
+    ).add_to(m)
 
-     
-    # # Heights Parcels
-    # heights_parcels_url = f"{request.base_url}/maps/heights-parcels.geojson"
-    # logging.info(f"heights_parcels_url: {heights_parcels_url}")
-    # folium.GeoJson(
-    #     heights_parcels_url,
-    #     name="Parcels",
-    #     style_function=lambda feature: {
-    #         'fillColor': 'gray',
-    #         'fillOpacity': 0.1,
-    #         'color': 'gray',
-    #         'weight': 0.5,
-    #         'opacity': 0.5,
-    #         # 'dashArray': '5, 5'
-    #     },
-    #     #FIXME is there a way to combine these two approaches — e.g. inject fields but also specify the HTML?
-    #     # see last comment for popup html injection
-    #     # https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
-
-    #     # # simple HTML tooltip
-    #     # tooltip='<b>Heights Parcel Tooltip</b><br><br>What should go here?',
-
-    #     # fields in HTML tooltip
-    #     tooltip=folium.features.GeoJsonTooltip(
-    #         fields=["HNUM", "HADD", "BLOCK","LOT"], 
-    #         aliases=["Number", "Street", "Block", "Lot"]
-    #     ),
-
-    #     # popup=folium.GeoJsonPopup(
-    #     #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
-    #     # ),
-    # ).add_to(m)
+    #BUG custom html popups solution
+    #TODO last example here https://stackoverflow.com/questions/38171687/adding-a-popup-to-a-geojson-layer-in-folium
+    #TODO loads the JSON into a dict
+    #TODO adds a column called "popups" that is the rendered HTML
+    #TODO calls folium.GeoJson with the dict and the popup=GeoJsonPopup(fields=['popups'], labels=False,)
+    
+    # Heights Parcels
+    folium.GeoJson(
+        f"{bucket_url}/maps/heights-parcels.geojson",
+        name="Parcels",
+        style_function=lambda feature: {
+            'fillColor': 'gray',
+            'fillOpacity': 0.1,
+            'color': 'gray',
+            'weight': 0.5,
+            'opacity': 0.5,
+            # 'dashArray': '5, 5'
+        },
+        # # fields in HTML tooltip
+        # tooltip=folium.features.GeoJsonTooltip(
+        #     fields=["HNUM", "HADD", "BLOCK","LOT"], 
+        #     aliases=["Number", "Street", "Block", "Lot"]
+        # ),
+        # popup=folium.GeoJsonPopup(
+        #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
+        # ),
+        popup = folium.Popup(
+            folium.Html('<b>Hello world</b>', script=True)
+            , max_width=2650
+            ),
+    ).add_to(m)
     
     # RNA Boundaries
-    boundaries_rna_url = f"{bucket_url}/maps/boundaries-rna.geojson"
-    logging.info(f"heights_parcels_url: {boundaries_rna_url}")
     folium.GeoJson(
-        boundaries_rna_url,
+        f"{bucket_url}/maps/boundaries-rna.geojson",
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'none',

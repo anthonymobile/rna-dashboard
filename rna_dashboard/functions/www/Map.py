@@ -60,10 +60,8 @@ def fullscreen_map(bucket_url):
         # popup=folium.GeoJsonPopup(
         #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
         # ),
-        # popup = folium.Popup(
-        #     folium.Html('<b>Hello world</b>', script=True)
-        #     , max_width=2650
-        #     ),
+
+        tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False),
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
     

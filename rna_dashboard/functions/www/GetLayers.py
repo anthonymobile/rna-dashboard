@@ -12,6 +12,7 @@ class LayerBundle():
         self.bucket_url = bucket_url
         self.geojson = self.get_geojson(layer_name)
         self.render_popups()
+        self.render_tooltips()
         # self.layer_and_popups = self.add_popups(layer_name)
 
     def get_geojson(self, layer_name):
@@ -23,10 +24,12 @@ class LayerBundle():
         for feature in self.geojson["features"]:
             feature["properties"]["popup"] = "<h2>This is a computed popup.</h2>"
         pass
-    
 
-    #TODO in Map.py, each folium.GeoJson instance should be created with 
-    # popup=folium.GeoJsonPopup(fields=['popup'], labels=False,)
+    def render_tooltips(self):
+        for feature in self.geojson["features"]:
+            feature["properties"]["tooltip"] = "<h2>This is a computed tooltip.</h2>"
+        pass
+    
 
 
     

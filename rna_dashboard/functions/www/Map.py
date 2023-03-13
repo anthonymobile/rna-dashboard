@@ -9,6 +9,8 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+from GetLayers import LayerBundle
+
 def fullscreen_map(bucket_url):
 
     m = folium.Map(
@@ -22,7 +24,7 @@ def fullscreen_map(bucket_url):
 
     # Heights Building Footprints
     folium.GeoJson(
-        f"{bucket_url}/maps/heights-building-footprints.geojson",
+        LayerBundle(bucket_url,"heights-building-footprints").geojson,
         name="Building Footprints",
         style_function=lambda feature: {
             'fillColor': 'grey',
@@ -36,15 +38,11 @@ def fullscreen_map(bucket_url):
         # ),
     ).add_to(m)
 
-    #BUG custom html popups solution
-    #TODO last example here https://stackoverflow.com/questions/38171687/adding-a-popup-to-a-geojson-layer-in-folium
-    #TODO loads the JSON into a dict
-    #TODO adds a column called "popups" that is the rendered HTML
-    #TODO calls folium.GeoJson with the dict and the popup=GeoJsonPopup(fields=['popups'], labels=False,)
     
     # Heights Parcels
+    #heights_parcels = LayerBundle(bucket_url,"heights-parcels")
     folium.GeoJson(
-        f"{bucket_url}/maps/heights-parcels.geojson",
+        LayerBundle(bucket_url,"heights-parcels").geojson,
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'gray',
@@ -62,10 +60,11 @@ def fullscreen_map(bucket_url):
         # popup=folium.GeoJsonPopup(
         #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
         # ),
-        popup = folium.Popup(
-            folium.Html('<b>Hello world</b>', script=True)
-            , max_width=2650
-            ),
+        # popup = folium.Popup(
+        #     folium.Html('<b>Hello world</b>', script=True)
+        #     , max_width=2650
+        #     ),
+        popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
     
     # RNA Boundaries

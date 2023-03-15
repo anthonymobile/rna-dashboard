@@ -12,7 +12,7 @@ from aws_cdk import (
     aws_s3_deployment as s3deploy,
 
 )
-import os
+
 from types import SimpleNamespace
 
 class RNADashboardStack(Stack):
@@ -49,7 +49,7 @@ class RNADashboardStack(Stack):
             handler="handler",
             timeout=Duration.seconds(60),
             runtime=_lambda.Runtime.PYTHON_3_8,
-            memory_size=256, #FIXME rightsize memory using Lambda Insights,
+            memory_size=10240, #FIXME rightsize memory using Lambda Insights,
             environment={"BUCKET_NAME": cfg.bucket_name,
                          "BUCKET_URL": f"https://{cfg.bucket_name}.s3.{cfg.region}.amazonaws.com"
                          }

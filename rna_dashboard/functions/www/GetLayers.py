@@ -4,7 +4,10 @@
 import requests
 from jinja2 import Environment, FileSystemLoader
 
-
+#BUG this is creating a memory explosion
+#TODO option 1 - increase memory to max
+#TODO option 2 - write them out back to disk? same file or separate file?
+#TODO option 3 - use a function approach instead of OOP
 
 class LayerBundle():
 
@@ -24,12 +27,21 @@ class LayerBundle():
         template = self.environment.get_template("popup.html")
         for feature in self.geojson["features"]:
             feature["properties"]["popup"] = template.render(
-                test_message="This is a test message"
+                properties=feature
                 )
+
+        # popup=folium.GeoJsonPopup(
+        #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
+        # ),
 
     def render_tooltips(self):
         template = self.environment.get_template("tooltip.html")
         for feature in self.geojson["features"]:
             feature["properties"]["tooltip"] = template.render(
-                test_message="This is a test message"
+                test_message="This is a tooltip. It should be pretty sparse" #BUG this
                 )
+
+        # tooltip=folium.features.GeoJsonTooltip(
+        #     fields=["HNUM", "HADD", "BLOCK","LOT"], 
+        #     aliases=["Number", "Street", "Block", "Lot"]
+        # ),

@@ -52,14 +52,6 @@ def fullscreen_map(bucket_url):
             'opacity': 0.5,
             # 'dashArray': '5, 5'
         },
-        # # fields in HTML tooltip
-        # tooltip=folium.features.GeoJsonTooltip(
-        #     fields=["HNUM", "HADD", "BLOCK","LOT"], 
-        #     aliases=["Number", "Street", "Block", "Lot"]
-        # ),
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD", "BLOCK","LOT"], aliases=["Number", "Street", "Block", "Lot"]
-        # ),
 
         tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False),
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
@@ -72,8 +64,8 @@ def fullscreen_map(bucket_url):
         style_function=lambda feature: {
             'fillColor': 'none',
             'color': 'green',
-            'weight': 4,
-            'opacity': 0.5,
+            'weight': 10,
+            'opacity': 0.75,
             'dashArray': '2, 2'
         },
     ).add_to(m)

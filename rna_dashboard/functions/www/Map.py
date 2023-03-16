@@ -22,25 +22,19 @@ def fullscreen_map(bucket_url):
     # layers stack in order they are added (last=top)
     ############################################################
 
-    # Heights Building Footprints
-    folium.GeoJson(
-        LayerBundle(bucket_url,"heights-building-footprints").geojson,
-        name="Building Footprints",
-        style_function=lambda feature: {
-            'fillColor': 'grey',
-            'color': 'black',
-            'weight': 0.5,
-            'dashArray': '3, 3'
-        },
-        # tooltip='<b>Heights Bulding Footprints Tooltip</b><br><br>What should go here?',
-        # popup=folium.GeoJsonPopup(
-        #     fields=["HNUM", "HADD"], aliases=["Number", "Street"]
-        # ),
-    ).add_to(m)
-
+    # # Heights Building Footprints
+    # folium.GeoJson(
+    #     LayerBundle(bucket_url,"heights-building-footprints").geojson,
+    #     name="Building Footprints",
+    #     style_function=lambda feature: {
+    #         'fillColor': 'grey',
+    #         'color': 'black',
+    #         'weight': 0.5,
+    #         'dashArray': '3, 3'
+    #     }
+    # ).add_to(m)
     
     # Heights Parcels
-    #heights_parcels = LayerBundle(bucket_url,"heights-parcels")
     folium.GeoJson(
         LayerBundle(bucket_url,"heights-parcels").geojson,
         name="Parcels",
@@ -49,10 +43,8 @@ def fullscreen_map(bucket_url):
             'fillOpacity': 0.1,
             'color': 'gray',
             'weight': 0.5,
-            'opacity': 0.5,
-            # 'dashArray': '5, 5'
+            'opacity': 0.5
         },
-
         tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False),
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)

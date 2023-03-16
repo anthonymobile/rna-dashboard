@@ -9,19 +9,13 @@ waiting for Stack Overflow help https://stackoverflow.com/questions/75706032/why
 ### stack: rna2-dashboard-stack
 testing using `send_file` for `/maps/<path:path>`
 
-## TODO features to add
-
+## features to add
 
 ### punchlist
 - Add draw 200 foot radius (from centroid? Check code) on clickd
 - customize tooltip formatting
         - Append a computed tooltip column with customised text https://towardsdatascience.com/using-folium-to-generate-choropleth-map-with-customised-tooltips-12e4cec42af2
         - injecting HTML into a folium popup (see last comment) https://gis.stackexchange.com/questions/185897/how-can-i-include-html-in-a-folium-marker-popup
-
-
-another idea = here
-
-
 
 
 - cloropleth map
@@ -45,7 +39,7 @@ another idea = here
     - https://gis.stackexchange.com/questions/313382/click-event-on-maps-with-folium-and-information-retrieval
 
 
-## TESTING AND DEBUGGING
+## DEBUGGING
 
 ### www lambda
 

@@ -4,6 +4,9 @@
 import requests
 from jinja2 import Environment, FileSystemLoader
 
+from shapely.geometry import shape
+from shapely.geometry.polygon import Polygon
+
 #BUG THIS IS MESS
 #BUG need to start over -- read the geojson, 
 #BUG leave it as a dict, iterate over it and add the popup and tooltip to each feature, 
@@ -40,10 +43,13 @@ class LayerBundle():
     
     def render_streetview_url(self,feature):
         try:
-            x = feature["properties"]["centroidx"] 
-            y = feature["properties"]["centroidy"] 
+            polygon: Polygon = shape(feature["geometry"])
+            representative_point = polygon.representative_point()
+            x = representative_point.x
+            y = representative_point.y
             return f"https://www.google.com/maps?layer=c&cbll={x},{y} target=blank"
-        except:
+        except Exception as e:
+            print (e)
             return None
 
     
@@ -52,6 +58,7 @@ class LayerBundle():
 # TODO variable names need to be wrapped in {{ double curly braces }} in the HTML template
 # TODO note that the template gets cached and flask needs to restarted to see changes
 # TODO putting dict keys in here doest work when the key is missing  
+
 
 
 # class Feature():

@@ -1,39 +1,36 @@
+<!-- FIXME embedded streetview in popup doesnt work DEBUG with browser-->
+<!-- per https://developers.google.com/maps/documentation/javascript/examples/streetview-embed#maps_streetview_embed-html -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize&v=weekly" defer></script>
 
+<!-- <div class="card col " style="border-radius:6px;border-top: 6px solid {color};"> -->
+<div>
 
-<div class="card col " style="border-radius:6px;border-top: 6px solid {color};">
+    <div id="street-view">
+        <!-- FIXME does embedded map go here? -->
+        <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize&v=weekly" defer></script> -->
+    </div>
+
     <div class="card-body">
-        <div style='display:flex;justify-content:space-between'">
-            <h4 class="card-title mb-4" style="font-size: 14px;">{{ feature.properties.HNUM }} {{ feature.properties.HADD }} </h4>
+        <div style='justify-content:space-between'">
+            <h4 class="card-title mb-1" style="font-size: 14px;">{{ hnum }} {{ hadd }} </h4>
         </div>
-    </div>
-    <div class="table-responsive">
-
-         <table class="table align-middle table-nowrap mb-0">
-            <thead>
-                <tr>
-                    <th scope="col" >Block</th>
-                    <th scope="col">Lot</th>
-                    <th scope="col">PAMS PIN</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ feature.properties.BLOCK }} </td>
-                    <td>{{ feature.properties.LOT }} </td>
-                    <td>{{ feature.properties.PAMS_PIN }} </td>
-                </tr>
-            </tbody>
-        </table>
+        <div style='display:flex;justify-content:space-between'">
+            <p class="mb-1" style="font-size: 12px;">
+                Block: {{ block }}
+            </p>
+            <p class="mb-1" style="font-size: 12px;">
+                Lot: {{ lot }}
+            </p>
+        </div>
+        <div style='justify-content:space-between'">
+            <p class="mb-1" style="font-size: 12px;"> View in <a target="new" href="{{ streetview_url }}">Google Streetview</a></p>
+        </div>
+        <div style='justify-content:space-between'"> 
+            <p class="mb-4" style="font-size: 10px;">
+                    Source: JC City Open Data: <a href="https://data.jerseycitynj.gov/explore/dataset/jersey-city-parcels/information/">Parcels (2019)</a> 
+            </p>           
+        </div>
 
     </div>
 
-    <p class="mb-0" style="font-size: 11px;">
-        View in <a href="{{ streetview_url }}">Google Streetview</a> (opens in new window)
-    </p>
-
-
-    <p class="mb-0" style="font-size: 11px;">
-            Source: JC City Open Data: <a href="https://data.jerseycitynj.gov/explore/dataset/jersey-city-parcels/information/">Parcels (2019)</a> 
-    </p>
-    </div>
 </div>  

@@ -1,5 +1,6 @@
 from branca.element import Template, MacroElement
 import folium
+from folium.elements import *
 from flask import request
 
 # Enable logging for lambda
@@ -22,21 +23,31 @@ def fullscreen_map(bucket_url):
     # layers stack in order they are added (last=top)
     ############################################################
 
-    # # Heights Building Footprints
-    # folium.GeoJson(
-    #     LayerBundle(bucket_url,"heights-building-footprints").geojson,
-    #     name="Building Footprints",
-    #     style_function=lambda feature: {
-    #         'fillColor': 'grey',
-    #         'color': 'black',
-    #         'weight': 0.5,
-    #         'dashArray': '3, 3'
-    #     }
-    # ).add_to(m)
+    # Heights Building Footprints
+    folium.GeoJson(
+        LayerBundle(
+            bucket_url,
+            "heights-building-footprints",
+            popups=False,
+            tooltips=False
+        ).geojson,
+        name="Building Footprints",
+        style_function=lambda feature: {
+            'fillColor': 'grey',
+            'color': 'black',
+            'weight': 0.5,
+            'dashArray': '3, 3'
+        }
+    ).add_to(m)
     
     # Heights Parcels
     folium.GeoJson(
-        LayerBundle(bucket_url,"heights-parcels").geojson,
+        LayerBundle(
+            bucket_url,
+            "heights-parcels",
+            popups=True,
+            tooltips=True
+        ).geojson,
         name="Parcels",
         style_function=lambda feature: {
             'fillColor': 'gray',
@@ -77,37 +88,6 @@ def fullscreen_map(bucket_url):
     # ).add_to(m)
 
 
-    # #FIXME: How to combine with the parcel pop-up or stop from overriding
-    # # ############################################################
-    # # POPUP: Street View access like on-click feature
-    # # https://www.mkrgeo-blog.com/open-street-view-with-python-folium-map/
-    # # ############################################################
- 
-    # class LatLngPopup(MacroElement):
-    #     _template = Template(u"""
-    #     {% macro script(this, kwargs) %}
-    #     var {{this.get_name()}} = L.popup();
-    #     function latLngPop(e) {
-    #     data = e.latlng.lat.toFixed(4) + "," + e.latlng.lng.toFixed(4);
-    #     {{this.get_name()}}
-    #     .setLatLng(e.latlng)
-    #     .setContent( "<H1>LatLngPopup</H1><a href=https://www.google.com/maps?layer=c&cbll=" + data + " target=blank >Google Streetview</a>")
-    #     .openOn({{this._parent.get_name()}})
-    #     }
-    #     {{this._parent.get_name()}}.on('click', latLngPop);
-
-    #     {% endmacro %}
-    #     """) # noqa
-
-    #     def __init__(self):
-    #         super(LatLngPopup, self).__init__()
-    #         self._name = 'LatLngPopup'
-
-    # latlon = LatLngPopup()
-
-    # m.add_child(latlon)
-
-
 
     ############################################################
     # FLOATING TEXTBOX
@@ -123,6 +103,13 @@ def fullscreen_map(bucket_url):
     # LAYER CONTROL
     ############################################################
     folium.LayerControl().add_to(m)
+
+    ############################################################
+    # CSS AND JS fOR STREETVIEW
+    ############################################################
+    m.get_root().header.add_child(CssLink('./static/style.css'))
+    m.get_root().html.add_child(JavascriptLink('./static/index.js'))
+    m.get_root().header.add_child(JavascriptLink('https://polyfill.io/v3/polyfill.min.js?features=default'))
 
     ############################################################
     # RETURN MAP

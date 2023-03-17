@@ -10,6 +10,8 @@ from aws_cdk import (
     aws_route53_targets as targets,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
+    aws_events as events, 
+    aws_events_targets as events_targets,
 
 )
 
@@ -57,6 +59,15 @@ class RNADashboardStack(Stack):
 
         my_handler.node.add_dependency(deployment)
 
+        ##################### KEEP WARM #####################
+        # Create the event rule
+        keep_warm_rule = events.Rule(
+            self, "RNA_Dashboard_WWW_Lambda_KeepWarm_Rule",
+            schedule_expression="rate(5 minutes)"  # adjust as needed
+        )
+
+        keep_warm_rule.add_target(events_targets.LambdaFunction(my_handler))
+
 
         ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################
 
@@ -81,7 +92,6 @@ class RNADashboardStack(Stack):
         self.certificate_arn = my_certificate.certificate_arn
 
         # create REST API
-        # TODO lambda integration options? https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/LambdaIntegrationOptions.html#lambdaintegrationoptions
         my_api = apigateway.LambdaRestApi(
             self,
             "RNA_Dashboard_WWW_ApiGateway",

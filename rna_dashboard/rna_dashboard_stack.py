@@ -59,14 +59,22 @@ class RNADashboardStack(Stack):
 
         my_handler.node.add_dependency(deployment)
 
-        ##################### KEEP WARM #####################
-        # Create the event rule
-        keep_warm_rule = events.Rule(
-            self, "RNA_Dashboard_WWW_Lambda_KeepWarm_Rule",
-            schedule_expression="rate(5 minutes)"  # adjust as needed
-        )
+        # ##################### KEEP WARM #####################
 
-        keep_warm_rule.add_target(events_targets.LambdaFunction(my_handler))
+        # # Create the event rule
+        # keep_warm_rule = events.Rule(
+        #     self, "KeepLambdaWarmRule",
+        #     schedule=events.Schedule.rate(Duration.minutes(5))  # adjust as needed
+        # )
+
+        # # Add a target to the rule that invokes the Lambda function
+        # keep_warm_rule.add_target(
+        #     events_targets.LambdaFunction(
+        #         my_handler,
+        #         event=events.RuleTargetInput.from_object({}),
+        #     ),
+        # )
+
 
 
         ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################

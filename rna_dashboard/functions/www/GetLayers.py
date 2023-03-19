@@ -26,14 +26,14 @@ class LayerBundle():
                 feature["properties"]["tooltip"] = self.render_tooltip(feature)
     
     def render_popup(self, feature):
-        feature["streetview_url"]=streetview_url=self.render_streetview_url(feature)
+
         return self.template_popup.render(
             hnum=feature["properties"]["HNUM"],
             hadd=feature["properties"]["HADD"],
             block=feature["properties"]["BLOCK"],
             lot=feature["properties"]["LOT"],
-            streetview_url=feature["streetview_url"],
-            # feature=feature
+            streetview_url=self.render_streetview_url(feature),
+            jcportal_url=self.render_jcportal_url(feature)
             )
 
     def render_tooltip(self, feature):
@@ -53,3 +53,13 @@ class LayerBundle():
         except Exception as e:
             print (e)
             return None
+        
+
+    def render_jcportal_url(self,feature):
+        try:
+            hnum = feature["properties"]["HNUM"]
+            hadd = feature["properties"]["HADD"]
+            return f"https://data.jerseycitynj.gov/explore/?q={hnum}+{hadd}"
+        except Exception as e:
+            print (e)
+            return "DINGO"

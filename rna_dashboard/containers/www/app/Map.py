@@ -73,21 +73,6 @@ def fullscreen_map(bucket_url):
         },
     ).add_to(m)
 
-    # # TODO add cloropleth? dwelling units /acre??
-    # choropleth = folium.Choropleth(
-    #     geo_data = hk_geo,
-    #     name = 'choropleth',
-    #     data = voter_proportion,
-    #     columns = ['Eng_name', 'Proportion'],
-    #     key_on = 'feature.properties.name_1',
-    #     fill_color = 'YlGn',
-    #     fill_opacity = 0.7,
-    #     line_opacity = 0.2,
-    #     legend_name = '2019年選民登記比例', # Voter Proportion (%) in 2019
-    #     highlight = True
-    # ).add_to(m)
-
-
 
     ############################################################
     # FLOATING TEXTBOX

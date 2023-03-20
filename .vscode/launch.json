@@ -1,21 +1,19 @@
 {
     "configurations": [
-      {
-        "name": "Docker: Python - Flask",
-        "type": "docker",
-        "request": "launch",
-        "preLaunchTask": "docker-run: debug",
-        "python": {
-          "pathMappings": [
-            {
-              "localRoot": "${workspaceFolder}/rna_dashboard/containers/www",
-              "remoteRoot": "/app"
+        {
+            "name": "Docker: Python - Flask",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "python": {
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "/app"
+                    }
+                ],
+                "projectType": "flask"
             }
-          ],
-          "projectType": "django"
         }
-      }
     ]
-  }
-  
-  .NE
+}

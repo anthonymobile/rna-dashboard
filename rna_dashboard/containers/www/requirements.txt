@@ -1,6 +1,5 @@
 requests
 flask
-flask-s3
 serverless-wsgi
 requests
 Werkzeug==2.0.3

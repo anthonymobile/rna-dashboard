@@ -1,23 +1,25 @@
 import requests
 from jinja2 import Environment, FileSystemLoader
-
+import json
 from shapely.geometry import shape
 from shapely.geometry.polygon import Polygon
 
 class LayerBundle():
 
-    def __init__(self, bucket_url, layer_name, **kwargs):
+    def __init__(self, base_url, layer_name, **kwargs):
         self.kwargs = kwargs
-        self.geojson = self.get_geojson(bucket_url, layer_name)
+        self.base_url = base_url
+        self.layer_name = layer_name
+        self.geojson = self.get_geojson_from_url()
         self.environment = Environment(loader=FileSystemLoader("templates/"))
         self.template_popup = self.environment.get_template("popup.html")
         self.template_tooltip = self.environment.get_template("tooltip.html")
         self.render_annotations()
 
-    def get_geojson(self, bucket_url, layer_name):
-        response = requests.get(f"{bucket_url}/maps/{layer_name}.geojson")
+    def get_geojson_from_url(self):
+        response = requests.get(f"{self.base_url}/static/{self.layer_name}.geojson")
         return response.json()
-    
+            
     def render_annotations(self):
         for feature in self.geojson["features"]:
             if self.kwargs.get("popups") == True:

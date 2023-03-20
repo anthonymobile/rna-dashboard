@@ -1,7 +1,7 @@
 from branca.element import Template, MacroElement
 import folium
 from folium.elements import *
-from flask import request
+
 
 # Enable logging for lambda
 # https://docs.aws.amazon.com/lambda/latest/dg/python-logging.html#python-logging-lib
@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 
 from GetLayers import LayerBundle
 
-def fullscreen_map(bucket_url):
+def fullscreen_map(base_url):
 
     m = folium.Map(
         location=(40.746759, -74.042197), zoom_start=16, tiles="stamentoner"
@@ -26,7 +26,7 @@ def fullscreen_map(bucket_url):
     # Heights Building Footprints
     folium.GeoJson(
         LayerBundle(
-            bucket_url,
+            base_url,
             "heights-building-footprints",
             popups=False,
             tooltips=False
@@ -43,7 +43,7 @@ def fullscreen_map(bucket_url):
     # Heights Parcels
     folium.GeoJson(
         LayerBundle(
-            bucket_url,
+            base_url,
             "heights-parcels",
             popups=True,
             tooltips=True
@@ -60,18 +60,20 @@ def fullscreen_map(bucket_url):
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
     
-    # RNA Boundaries
-    folium.GeoJson(
-        f"{bucket_url}/maps/boundaries-rna.geojson",
-        name="Parcels",
-        style_function=lambda feature: {
-            'fillColor': 'none',
-            'color': 'green',
-            'weight': 10,
-            'opacity': 0.75,
-            'dashArray': '2, 2'
-        },
-    ).add_to(m)
+    # #BUG something wrong with style_function
+    # # RNA Boundaries
+    # folium.GeoJson(
+    #     base_url,
+    #     "boundaries-rna",
+    #     name="RNA Boundaries",
+    #     style_function=lambda feature: {
+    #         'fillColor': 'none',
+    #         'color': 'green',
+    #         'weight': 10,
+    #         'opacity': 0.75,
+    #         'dashArray': '2, 2'
+    #     },
+    # ).add_to(m)
 
 
     ############################################################

@@ -3,7 +3,19 @@ thank you https://realpython.com/python-folium-web-maps-from-data/ for the styli
 
 ## DEBUGGING STATUS AS OF 2023-03-11
 
-1. need to migrate to an ECS/Fargate deplo
+1. need to migrate to an ECS/Fargate deploy
+2. upgrade to production container https://www.digitalocean.com/community/tutorials/how-to-build-and-deploy-a-flask-application-using-docker-on-ubuntu-20-04
+
+to debug container
+
+    cd /Users/anthonytownsend/Desktop/code/chilltown_labs/rna-dashboard/rna_dashboard/containers/www
+
+    docker build . --tag rnadashboard:latest
+    
+    docker run -p 5000:5000 rnadashboard
+
+    Go to URL http://localhost:5000
+
 
 ## features to add
 

@@ -1,24 +1,21 @@
 {
     "configurations": [
-
-
-        {
-            "name": "app-local.py",
-            "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "app-local.py",
-                "FLASK_DEBUG": "1"
-            },
-            "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true,
-            "justMyCode": true,
-            "cwd": "/Users/anthonytownsend/Desktop/code/chilltown_labs/rna-dashboard/rna_dashboard/functions/www"
+      {
+        "name": "Docker: Python - Flask",
+        "type": "docker",
+        "request": "launch",
+        "preLaunchTask": "docker-run: debug",
+        "python": {
+          "pathMappings": [
+            {
+              "localRoot": "${workspaceFolder}/rna_dashboard/containers/www",
+              "remoteRoot": "/app"
+            }
+          ],
+          "projectType": "django"
         }
+      }
     ]
-}
+  }
+  
+  .NE

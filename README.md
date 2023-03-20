@@ -3,7 +3,7 @@ thank you https://realpython.com/python-folium-web-maps-from-data/ for the styli
 
 ## DEBUGGING STATUS AS OF 2023-03-11
 
-1. need to migrate to an ECS/Fargate deployment
+1. need to migrate to an ECS/Fargate deplo
 
 ## features to add
 

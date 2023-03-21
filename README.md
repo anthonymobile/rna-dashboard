@@ -1,12 +1,11 @@
 # rna-dashboard
 thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
-## DEBUGGING STATUS AS OF 2023-03-11
 
-1. need to migrate to an ECS/Fargate deploy
-2. upgrade to production container https://www.digitalocean.com/community/tutorials/how-to-build-and-deploy-a-flask-application-using-docker-on-ubuntu-20-04
+## FARGATE DEBUGGING STATUS AS OF 2023-03-20
 
-to debug container
+
+### to debug container
 
     cd /Users/anthonytownsend/Desktop/code/chilltown_labs/rna-dashboard/rna_dashboard/containers/www
 
@@ -16,8 +15,17 @@ to debug container
 
     Go to URL http://localhost:5000
 
+### next step
+- upgrade to production container https://www.digitalocean.com/community/tutorials/how-to-build-and-deploy-a-flask-application-using-docker-on-ubuntu-20-04
 
-## features to add
+
+## AFTER FARGATE -- ABANDON FARGATE AND SIMPLY CONVERT TO STATIC SITE?
+
+- https://arunkprasad.com/log/how-to-create-a-static-website-with-flask/
+- https://testdriven.io/blog/static-site-flask-and-netlify/
+
+
+## APP FEATURES TO ADD
 
 ### VIP
 - layout

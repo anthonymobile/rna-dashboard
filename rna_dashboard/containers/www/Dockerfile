@@ -1,4 +1,4 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2022
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 RUN yum install python3 && \
 curl -O https://bootstrap.pypa.io/get-pip.py && \
 python3 get-pip.py && \

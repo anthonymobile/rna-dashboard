@@ -7,8 +7,7 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
-    aws_elasticloadbalancingv2 as elbv2,
-    aws_logs as logs,
+
 )
 
 from types import SimpleNamespace
@@ -51,8 +50,9 @@ class RNADashboardStack(Stack):
         image = ecs.ContainerImage.from_asset("rna_dashboard/containers/www")
 
         container = task_definition.add_container("app", image=image)
-        
-        container.add_port_mappings(ecs.PortMapping(container_port=8080))
+
+        # container.add_port_mappings(ecs.PortMapping(container_port=8080))        
+        container.add_port_mappings(ecs.PortMapping(container_port=5000))
 
         ecs_patterns.ApplicationLoadBalancedFargateService(
             self, f"{cfg.stack_name}__DemoService",

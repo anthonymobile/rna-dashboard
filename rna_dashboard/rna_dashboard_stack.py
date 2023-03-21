@@ -1,6 +1,7 @@
 from constructs import Construct
 from aws_cdk import (
     Stack,
+    Tag,
     aws_certificatemanager as acm,
     aws_route53 as route53,
     aws_route53_targets as targets,
@@ -20,6 +21,7 @@ class RNADashboardStack(Stack):
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        tag = Tag("project", cfg.project)
 
         ##################### FARGATE #####################
         # https://github.com/idanlupinsky/python-cdk-ecs-demo

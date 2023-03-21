@@ -2,12 +2,14 @@ from constructs import Construct
 from aws_cdk import (
     Stack,
     Tag,
+    aws_cloudfront as cf,
+    custom_resources as cr,
+    aws_s3 as s3,
+    aws_s3_deployment as s3_deployment,
     aws_certificatemanager as acm,
     aws_route53 as route53,
     aws_route53_targets as targets,
-    aws_ec2 as ec2,
-    aws_ecs as ecs,
-    aws_ecs_patterns as ecs_patterns,
+
 
 )
 
@@ -23,45 +25,68 @@ class RNADashboardStack(Stack):
 
         tag = Tag("project", cfg.project)
 
-        ##################### FARGATE #####################
-        # https://github.com/idanlupinsky/python-cdk-ecs-demo
+        #TODO render static site
+        # https://arunkprasad.com/log/how-to-create-a-static-website-with-flask/
 
-        vpc = ec2.Vpc(
-            self, 
-            f"{cfg.stack_name}__EcsVpc", 
-            max_azs=2, 
-            nat_gateways=0
-            )
-        
-        vpc.add_interface_endpoint('EcrDockerEndpoint', service=ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER)
-        vpc.add_interface_endpoint('EcrEndpoint', service=ec2.InterfaceVpcEndpointAwsService.ECR)
-        vpc.add_interface_endpoint('CloudWatchLogsEndpoint', service=ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS)
-        
-        cluster = ecs.Cluster(
-            self, 
-            f"{cfg.stack_name}__EcsCluster", 
-            vpc=vpc
-            )
-        
-        task_definition = ecs.FargateTaskDefinition(
-            self, 
-            f"{cfg.stack_name}__DemoServiceTask", 
-            family=f"{cfg.stack_name}__DemoServiceTask"
-            )
+       ##################### MAP DATA BUCKET #####################
+        #TODO: create S3 bucket from build folder
+        #TODO: add S3 deployment
 
-        image = ecs.ContainerImage.from_asset("rna_dashboard/containers/www")
 
-        container = task_definition.add_container("app", image=image)
+        bucket_name=cfg.stack_name 
+        folder_to_deploy = "app/build"
 
-        # container.add_port_mappings(ecs.PortMapping(container_port=8080))        
-        container.add_port_mappings(ecs.PortMapping(container_port=5000))
+        bucket = s3.Bucket(self,
+            f"{cfg.stack_name}__Data_Bucket",
+            bucket_name=bucket_name,
+            public_read_access=True,
+        )
 
-        ecs_patterns.ApplicationLoadBalancedFargateService(
-            self, f"{cfg.stack_name}__DemoService",
-            cluster=cluster,
-            desired_count=2,
-            task_definition=task_definition
-            )
+        deployment = s3_deployment.BucketDeployment(self, 
+            f"{cfg.stack_name}__Data_Bucket_Deployment",
+            sources=[s3_deployment.Source.asset(folder_to_deploy)],
+            destination_bucket=bucket,
+            # memory_limit=1024,
+        )
+
+
+        # #TODO: create CloudFront distribution
+        # # https://rubenjgarcia.cloud/static-web-in-cloudfront-with-aws-cdk/
+
+
+        # parameter = cr.AwsCustomResource(self, "GetCertificateArn",
+        #                             on_update=cr.AwsSdkCall(
+        #                                 service="SSM",
+        #                                 action="getParameter",
+        #                                 parameters={
+        #                                     "Name": "certificate-arn"
+        #                                 },
+        #                                 region="us-east-1",
+        #                                 physical_resource_id=str(time.time)
+        #                             )
+        #                             )
+ 
+        # cf.CloudFrontWebDistribution(self, "CDN",
+        #                              price_class=cf.PriceClass.PRICE_CLASS_100,
+        #                              alias_configuration=cf.AliasConfiguration(
+        #                                  names=["static.rubenjgarcia.es"],
+        #                                  acm_cert_ref=parameter.get_data_string("Parameter.Value"),
+        #                                  ssl_method=cf.SSLMethod.SNI,
+        #                                  security_policy=cf.SecurityPolicyProtocol.TLS_V1_1_2016
+        #                              ),
+        #                              origin_configs=[
+        #                                  cf.SourceConfiguration(
+        #                                      behaviors=[
+        #                                          cf.Behavior(
+        #                                              is_default_behavior=True)
+        #                                      ],
+        #                                      s3_origin_source=cf.S3OriginConfig(
+        #                                          s3_bucket_source=bucket
+        #                                      )
+        #                                  )
+        #                              ]
+        #                              )
+
 
         # ##################### CUSTOM DOMAIN #####################
 

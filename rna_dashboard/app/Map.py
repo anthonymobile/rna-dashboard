@@ -1,9 +1,7 @@
 from branca.element import Template, MacroElement
 import folium
 from folium.elements import *
-
-
-from GetLayers import LayerBundle
+from Layer import Layer
 
 def fullscreen_map(base_url):
 
@@ -18,7 +16,7 @@ def fullscreen_map(base_url):
 
     # Heights Building Footprints
     folium.GeoJson(
-        LayerBundle(
+        Layer(
             base_url,
             "heights-building-footprints",
             popups=False,
@@ -35,7 +33,7 @@ def fullscreen_map(base_url):
     
     # Heights Parcels
     folium.GeoJson(
-        LayerBundle(
+        Layer(
             base_url,
             "heights-parcels",
             popups=True,
@@ -53,7 +51,7 @@ def fullscreen_map(base_url):
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
     
-    # #BUG something wrong with style_function
+    # #BUG update to use Layer class
     # # RNA Boundaries
     # folium.GeoJson(
     #     base_url,

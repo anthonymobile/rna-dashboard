@@ -1,16 +1,15 @@
 from constructs import Construct
 from aws_cdk import (
     Stack,
-    Tag,
+    Duration,
+    aws_s3 as s3,
+    aws_s3_deployment as s3deploy,
     aws_certificatemanager as acm,
+    aws_cloudfront as cloudfront,
     aws_route53 as route53,
-    aws_route53_targets as targets,
-    aws_ec2 as ec2,
-    aws_ecs as ecs,
-    aws_ecs_patterns as ecs_patterns,
-
+    aws_route53_targets as route53_targets,
 )
-
+import os
 from types import SimpleNamespace
 
 class RNADashboardStack(Stack):
@@ -21,73 +20,108 @@ class RNADashboardStack(Stack):
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        tag = Tag("project", cfg.project)
+        ##################### MAP DATA BUCKET #####################
+        bucket_name=cfg.bucket_name 
+        folder_to_deploy = "site_staging"
 
-        ##################### FARGATE #####################
-        # https://github.com/idanlupinsky/python-cdk-ecs-demo
+        bucket = s3.Bucket(self,
+            f"{cfg.stack_name}__Data_Bucket",
+            bucket_name=bucket_name,
+            public_read_access=True,
+        )
 
-        vpc = ec2.Vpc(
+        deployment = s3deploy.BucketDeployment(self, 
+            f"{cfg.stack_name}__Data_Bucket_Deployment",
+            sources=[s3deploy.Source.asset(folder_to_deploy)],
+            destination_bucket=bucket,
+            memory_limit=1024, #without this it will just hang and not deploy with no error
+        )
+
+        ##################### CERTIFICATE #####################
+        root_domain = cfg.domain
+        subdomain = cfg.subdomain
+        fully_qualified_domain_name = f"{subdomain}.{root_domain}"
+
+        # get the hosted zone
+        zone = route53.HostedZone.from_lookup(
             self, 
-            f"{cfg.stack_name}__EcsVpc", 
-            max_azs=2, 
-            nat_gateways=0
-            )
+            f"{cfg.stack_name}__HostedZone", 
+            domain_name=root_domain
+        )
         
-        vpc.add_interface_endpoint('EcrDockerEndpoint', service=ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER)
-        vpc.add_interface_endpoint('EcrEndpoint', service=ec2.InterfaceVpcEndpointAwsService.ECR)
-        vpc.add_interface_endpoint('CloudWatchLogsEndpoint', service=ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS)
+        certificate = acm.Certificate(
+            self, f"{cfg.stack_name}__FlaskFargateCertificate",
+            domain_name=fully_qualified_domain_name,
+            validation=acm.CertificateValidation.from_dns(zone))
         
-        cluster = ecs.Cluster(
+        # #TODO more modern distribution construct
+        # # ##################### CLOUDFRONT MODERN #####################
+        # # # Create a CloudFront distribution and map it to your custom domain
+        # # distribution = cloudfront.Distribution(
+        # #     self,
+        # #     "MyDistribution",
+        # #     default_behavior=cloudfront.BehaviorOptions(
+        # #         origin=cloudfront.S3OriginConfig(
+        # #             s3_bucket_source=bucket,
+        # #         ),
+        # #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        # #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        # #     ),
+        # #     certificate=cloudfront.Certificate.from_acm_certificate(
+        # #         acm_certificate=core.SecretValue.secrets_manager(
+        # #             "my/acm/cert", json_field="arn"
+        # #         ),
+        # #     ),
+        # #     domain_names=["example.com", "www.example.com"],
+        # # )
+
+
+        ##################### CLOUDFRONT #####################
+
+        distribution = cloudfront.CloudFrontWebDistribution(
             self, 
-            f"{cfg.stack_name}__EcsCluster", 
-            vpc=vpc
-            )
-        
-        task_definition = ecs.FargateTaskDefinition(
+            "MyDistribution",
+            origin_configs=[
+                cloudfront.SourceConfiguration(
+                    s3_origin_source=cloudfront.S3OriginConfig(
+                        s3_bucket_source=bucket
+                    ),
+                    behaviors=[
+                        cloudfront.Behavior(
+                            is_default_behavior=True,
+                            default_ttl=Duration.seconds(60),
+                        )
+                    ],
+                )
+            ],
+            # #TODO try me first
+            # alias_configuration=cloudfront.AliasConfiguration(
+            #     names=[fully_qualified_domain_name],
+            #     acm_cert_ref=certificate.certificate_arn,
+            #     security_policy=cloudfront.SecurityPolicyProtocol.SSL_V3,  # default
+            #     ssl_method=cloudfront.SSLMethod.SNI
+            #     ),
+            #TODO try me second
+            viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
+                certificate=certificate,
+                aliases=[fully_qualified_domain_name],
+                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,  # default
+                ssl_method=cloudfront.SSLMethod.SNI
+                )
+        )
+
+        distribution.node.add_dependency(certificate)
+        distribution.node.add_dependency(deployment)
+
+
+        ##################### DNS A RECORD #####################
+
+        route53.ARecord(
             self, 
-            f"{cfg.stack_name}__DemoServiceTask", 
-            family=f"{cfg.stack_name}__DemoServiceTask"
-            )
-
-        image = ecs.ContainerImage.from_asset("rna_dashboard/containers/www")
-
-        container = task_definition.add_container("app", image=image)
-
-        # container.add_port_mappings(ecs.PortMapping(container_port=8080))        
-        container.add_port_mappings(ecs.PortMapping(container_port=5000))
-
-        ecs_patterns.ApplicationLoadBalancedFargateService(
-            self, f"{cfg.stack_name}__DemoService",
-            cluster=cluster,
-            desired_count=2,
-            task_definition=task_definition
-            )
-
-        # ##################### CUSTOM DOMAIN #####################
-
-        # root_domain = cfg.domain
-        # subdomain = cfg.subdomain
-        # fully_qualified_domain_name = f"{subdomain}.{root_domain}"
-
-        # # get the hosted zone
-        # zone = route53.HostedZone.from_lookup(
-        #     self, 
-        #     f"{cfg.stack_name}__HostedZone", 
-        #     domain_name=root_domain
-        # )
-
-        # # Create an ACM certificate for the domain
-        # certificate = acm.Certificate(
-        #     self, f"{cfg.stack_name}__FlaskFargateCertificate",
-        #     domain_name=fully_qualified_domain_name,
-        #     validation=acm.CertificateValidation.from_dns(zone))
-
-        # # Create an A record in the Route 53 hosted zone to point to the Fargate service
-        # route53.ARecord(
-        #     self, f"{cfg.stack_name}__FlaskFargateRecord",
-        #     zone=zone,
-        #     record_name=subdomain,
-        #     target=route53.RecordTarget.from_ip_addresses(*service.load_balancer.load_balancer_dns_names)
-        #     )
-
-
+            "AliasRecord",
+            zone=zone,
+            record_name=subdomain,
+            target=route53.RecordTarget.from_alias(
+                route53_targets.CloudFrontTarget(distribution)
+            ),
+        )

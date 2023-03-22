@@ -1,0 +1,10 @@
+requests
+flask
+Frozen-Flask
+serverless-wsgi
+requests
+Werkzeug==2.0.3
+lxml
+folium
+shapely
+branca

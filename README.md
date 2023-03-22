@@ -1,33 +1,32 @@
 # rna-dashboard
-thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial
 
+This is a folium dashboard for a community in Jersey City, NJ. It is a static website.
 
-## FARGATE DEBUGGING STATUS AS OF 2023-03-20
+## to deploy
 
-
-### to debug container
-
-    cd /Users/anthonytownsend/Desktop/code/chilltown_labs/rna-dashboard/rna_dashboard/containers/www
-
-    docker build . --tag rnadashboard:latest
+1. cd to app dir
     
-    docker run -p 5000:5000 rnadashboard
+    `cd rna_dashboard/app`
 
-    Go to URL http://localhost:5000
+2. build the static site
 
-### next step
-- upgrade to production container https://www.digitalocean.com/community/tutorials/how-to-build-and-deploy-a-flask-application-using-docker-on-ubuntu-20-04
+    `python freeze.py`
 
+3. cd back up and deploy
 
-## AFTER FARGATE -- ABANDON FARGATE AND SIMPLY CONVERT TO STATIC SITE?
+    `cd ../.. && cdk deploy`
 
-- https://arunkprasad.com/log/how-to-create-a-static-website-with-flask/
-- https://testdriven.io/blog/static-site-flask-and-netlify/
+## cleanup a failed deploy
 
+1. `aws cloudformation delete-stack --stack-name rna-dashboard-stack`
+2. empty bucket `aws s3 rm s3://rna-dashboard-stack --recursive`
+3. `aws s3api delete-bucket --bucket rna-dashboard-stack`
 
-## APP FEATURES TO ADD
+## features to add
 
 ### VIP
+- build / stack
+    - automate the freeze process
 - layout
     change out float for a bottom full-width bar with simple big title
 - popups: more query shortcuts
@@ -46,3 +45,6 @@ thank you https://realpython.com/python-folium-web-maps-from-data/ for the styli
         radius=200).add_to(map) #tk? how to scale the circle?
 - export vacants db to geojson and add layer
 — add 3d viewer, buildings layer in a 3d viewer
+
+## credits
+thank you https://realpython.com/python-folium-web-maps-from-data/ for the styling and layout tutorial

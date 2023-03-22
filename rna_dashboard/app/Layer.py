@@ -18,11 +18,11 @@ class Layer():
         self.render_annotations()
 
     def get_geojson_from_url(self):
-        response = requests.get(f"{self.base_url}/static/{self.layer_name}.geojson")
+        response = requests.get(f"{self.base_url}/assets/{self.layer_name}.geojson")
         return response.json()
     
     def get_geojson_from_disk(self):
-        with open(f"static/{self.layer_name}.geojson") as f:
+        with open(f"assets/{self.layer_name}.geojson") as f:
             data = json.load(f)
             return data
 

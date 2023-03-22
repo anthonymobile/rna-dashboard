@@ -7,7 +7,7 @@ from aws_cdk import (
     aws_certificatemanager as acm,
     aws_cloudfront as cloudfront,
     aws_route53 as route53,
-    aws_route53_targets as targets,
+    aws_route53_targets as route53_targets,
 )
 import os
 from types import SimpleNamespace

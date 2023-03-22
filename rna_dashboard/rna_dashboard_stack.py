@@ -25,7 +25,7 @@ class RNADashboardStack(Stack):
 
         ##################### MAP DATA BUCKET #####################
         bucket_name=cfg.bucket_name 
-        folder_to_deploy = "rna_dashboard/data/www"
+        folder_to_deploy = "site_staging"
 
         bucket = s3.Bucket(self,
             f"{cfg.stack_name}__Data_Bucket",
@@ -40,65 +40,91 @@ class RNADashboardStack(Stack):
             # memory_limit=1024,
         )
 
-        # ##################### WWW HANDLER LAMBDA #####################
-        # my_handler = lambda_alpha_.PythonFunction(
-        #     self,
-        #     "RNA_Dashboard_WWW_Lambda",
-        #     entry="./rna_dashboard/functions/www/",
-        #     index="app.py",
-        #     handler="handler",
-        #     timeout=Duration.seconds(60),
-        #     runtime=_lambda.Runtime.PYTHON_3_8,
-        #     memory_size=256, #FIXME rightsize memory using Lambda Insights,
-        #     environment={"BUCKET_NAME": cfg.bucket_name,
-        #                  "BUCKET_URL": f"https://{cfg.bucket_name}.s3.{cfg.region}.amazonaws.com"
-        #                  }
-        # )
-
-        # my_handler.node.add_dependency(deployment)
-
-
-        # ##################### REST API GATEWAY WITH CUSTOM DOMAIN #####################
-
+        # ##################### CERTIFICATE #####################
         # root_domain = cfg.domain
         # subdomain = cfg.subdomain
         # fully_qualified_domain_name = f"{subdomain}.{root_domain}"
 
         # # get the hosted zone
-        # my_hosted_zone = route53.HostedZone.from_lookup(
-        #     self, "BusObservatoryAPI_HostedZone", domain_name=root_domain
+        # zone = route53.HostedZone.from_lookup(
+        #     self, 
+        #     f"{cfg.stack_name}__HostedZone", 
+        #     domain_name=root_domain
         # )
-
-        # # create certificate
-        # my_certificate = acm.Certificate(
-        #     self,
-        #     "RNA_Dashboard_Stack_Certificate",
+        
+        # certificate = acm.Certificate(
+        #     self, f"{cfg.stack_name}__FlaskFargateCertificate",
         #     domain_name=fully_qualified_domain_name,
-        #     validation=acm.CertificateValidation.from_dns(hosted_zone=my_hosted_zone),
+        #     validation=acm.CertificateValidation.from_dns(zone))
+        
+        # #TODO more modern distribution construct
+        # # ##################### CLOUDFRONT MODERN #####################
+        # # # Create a CloudFront distribution and map it to your custom domain
+        # # distribution = cloudfront.Distribution(
+        # #     self,
+        # #     "MyDistribution",
+        # #     default_behavior=cloudfront.BehaviorOptions(
+        # #         origin=cloudfront.S3OriginConfig(
+        # #             s3_bucket_source=bucket,
+        # #         ),
+        # #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        # #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        # #     ),
+        # #     certificate=cloudfront.Certificate.from_acm_certificate(
+        # #         acm_certificate=core.SecretValue.secrets_manager(
+        # #             "my/acm/cert", json_field="arn"
+        # #         ),
+        # #     ),
+        # #     domain_names=["example.com", "www.example.com"],
+        # # )
+
+
+        # ##################### CLOUDFRONT #####################
+
+        # distribution = cloudfront.CloudFrontWebDistribution(
+        #     self, 
+        #     "MyDistribution",
+        #     origin_configs=[
+        #         cloudfront.SourceConfiguration(
+        #             s3_origin_source=cloudfront.S3OriginConfig(
+        #                 s3_bucket_source=bucket
+        #             ),
+        #             behaviors=[
+        #                 cloudfront.Behavior(
+        #                     is_default_behavior=True,
+        #                     default_ttl=Duration.seconds(60),
+        #                 )
+        #             ],
+        #         )
+        #     ],
+        #     # #TODO try me first
+        #     # alias_configuration=cloudfront.AliasConfiguration(
+        #     #     names=[fully_qualified_domain_name],
+        #     #     acm_cert_ref=certificate.certificate_arn,
+        #     #     security_policy=cloudfront.SecurityPolicyProtocol.SSL_V3,  # default
+        #     #     ssl_method=cloudfront.SSLMethod.SNI
+        #     #     ),
+        #     #TODO try me second
+        #     viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
+        #         certificate=certificate,
+        #         aliases=[fully_qualified_domain_name],
+        #         security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,  # default
+        #         ssl_method=cloudfront.SSLMethod.SNI
+        #         )
         # )
 
-        # # export the certificate arn
-        # self.certificate_arn = my_certificate.certificate_arn
+        # distribution.node.add_dependency(certificate)
+        # distribution.node.add_dependency(deployment)
 
-        # # create REST API
-        # # TODO lambda integration options? https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_apigateway/LambdaIntegrationOptions.html#lambdaintegrationoptions
-        # my_api = apigateway.LambdaRestApi(
-        #     self,
-        #     "RNA_Dashboard_WWW_ApiGateway",
-        #     handler=my_handler,
-        #     domain_name=apigateway.DomainNameOptions(
-        #         domain_name=fully_qualified_domain_name,
-        #         certificate=my_certificate,
-        #         security_policy=apigateway.SecurityPolicy.TLS_1_2,
-        #         endpoint_type=apigateway.EndpointType.EDGE,
-        #     ),
-        # )
 
-        # # create DNS A record
+        # ##################### DNS A RECORD #####################
+
         # route53.ARecord(
-        #     self,
-        #     "RNA_Dashboard__WWW_ApiRecord",
+        #     self, 
+        #     "AliasRecord",
+        #     zone=zone,
         #     record_name=subdomain,
-        #     zone=my_hosted_zone,
-        #     target=route53.RecordTarget.from_alias(targets.ApiGateway(my_api)),
+        #     target=route53.RecordTarget.from_alias(
+        #         route53_targets.CloudFrontTarget(distribution)
+        #     ),
         # )

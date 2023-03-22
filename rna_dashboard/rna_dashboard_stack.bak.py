@@ -21,8 +21,8 @@ class RNADashboardStack(Stack):
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-       ##################### LOAD CONFIG #####################
-        tag = Tag("project", cfg.project)
+        ##################### LOAD CONFIG #####################
+        # tag = Tag("project", cfg.project)
 
         # #FIXME this wont render static site because it cant import Maps in the subfolder
         # # https://arunkprasad.com/log/how-to-create-a-static-website-with-flask/
@@ -44,19 +44,17 @@ class RNADashboardStack(Stack):
         bucket_name=cfg.stack_name 
         folder_to_deploy = "rna_dashboard/app/build"
 
-        # https://pypi.org/project/aws-cdk.aws-s3-deployment/
-        website_bucket = s3.Bucket(
-            self, 
+        bucket = s3.Bucket(self, 
             f"{cfg.stack_name}__Data_Bucket",
             bucket_name=bucket_name,
-            website_index_document="index.html",
+            # website_index_document="index.html",
             public_read_access=True
         )
 
-        s3deploy.BucketDeployment(self, "DeployWebsite",
+        deployment = s3deploy.BucketDeployment(self,
+            f"{cfg.stack_name}__Data_Bucket_Deployment",
             sources=[s3deploy.Source.asset(folder_to_deploy)],
-            destination_bucket=website_bucket,
-            # destination_key_prefix="web/static"
+            destination_bucket=bucket
         )
 
         # ##################### CERTIFICATE #####################

@@ -1,5 +1,5 @@
 { 
-    "project": "rna-dashboard",
-    "subdomain": "rna",
+    "project": "rna-dashboard-staging",
+    "subdomain": "rna-staging",
     "domain" :"chilltownlabs.com"
 }

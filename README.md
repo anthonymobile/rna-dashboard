@@ -25,6 +25,8 @@ This is a folium dashboard for a community in Jersey City, NJ. It is a static we
 ## features to add
 
 ### VIP
+- run seeclickfix query and display
+    - https://seeclickfix.com/api/v2/issues?lat=40.750650&lng=-74.042520&zoom=18
 - build / stack
     - automate the freeze process
 - layout

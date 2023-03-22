@@ -4,7 +4,7 @@ from aws_cdk import (
     Stack,
     Tag,
     aws_s3 as s3,
-    aws_s3_deployment as s3_deployment,
+    aws_s3_deployment as s3deploy,
     aws_cloudfront as cloudfront,
     aws_certificatemanager as acm,
     aws_route53 as route53,
@@ -23,9 +23,6 @@ class RNADashboardStack(Stack):
 
        ##################### LOAD CONFIG #####################
         tag = Tag("project", cfg.project)
-        root_domain = cfg.domain
-        subdomain = cfg.subdomain
-        fully_qualified_domain_name = f"{subdomain}.{root_domain}"
 
         # #FIXME this wont render static site because it cant import Maps in the subfolder
         # # https://arunkprasad.com/log/how-to-create-a-static-website-with-flask/
@@ -44,101 +41,109 @@ class RNADashboardStack(Stack):
 
 
         ##################### STATIC SITE #####################
-
         bucket_name=cfg.stack_name 
         folder_to_deploy = "rna_dashboard/app/build"
 
-        bucket = s3.Bucket(self,
+        # https://pypi.org/project/aws-cdk.aws-s3-deployment/
+        website_bucket = s3.Bucket(
+            self, 
             f"{cfg.stack_name}__Data_Bucket",
             bucket_name=bucket_name,
-            public_read_access=True,
+            website_index_document="index.html",
+            public_read_access=True
         )
 
-        deployment = s3_deployment.BucketDeployment(self, 
-            f"{cfg.stack_name}__Data_Bucket_Deployment",
-            sources=[s3_deployment.Source.asset(folder_to_deploy)],
-            destination_bucket=bucket,
-            # memory_limit=1024,
+        s3deploy.BucketDeployment(self, "DeployWebsite",
+            sources=[s3deploy.Source.asset(folder_to_deploy)],
+            destination_bucket=website_bucket,
+            # destination_key_prefix="web/static"
         )
 
-        ##################### CERTIFICATE #####################
-        # get the hosted zone
-        zone = route53.HostedZone.from_lookup(
-            self, 
-            f"{cfg.stack_name}__HostedZone", 
-            domain_name=root_domain
-        )
+        # ##################### CERTIFICATE #####################
+        # root_domain = cfg.domain
+        # subdomain = cfg.subdomain
+        # fully_qualified_domain_name = f"{subdomain}.{root_domain}"
+
+        # # get the hosted zone
+        # zone = route53.HostedZone.from_lookup(
+        #     self, 
+        #     f"{cfg.stack_name}__HostedZone", 
+        #     domain_name=root_domain
+        # )
         
-        certificate = acm.Certificate(
-            self, f"{cfg.stack_name}__FlaskFargateCertificate",
-            domain_name=fully_qualified_domain_name,
-            validation=acm.CertificateValidation.from_dns(zone))
+        # certificate = acm.Certificate(
+        #     self, f"{cfg.stack_name}__FlaskFargateCertificate",
+        #     domain_name=fully_qualified_domain_name,
+        #     validation=acm.CertificateValidation.from_dns(zone))
         
-        #TODO more modern distribution construct
-        # ##################### CLOUDFRONT MODERN #####################
-        # # Create a CloudFront distribution and map it to your custom domain
-        # distribution = cloudfront.Distribution(
-        #     self,
+        # #TODO more modern distribution construct
+        # # ##################### CLOUDFRONT MODERN #####################
+        # # # Create a CloudFront distribution and map it to your custom domain
+        # # distribution = cloudfront.Distribution(
+        # #     self,
+        # #     "MyDistribution",
+        # #     default_behavior=cloudfront.BehaviorOptions(
+        # #         origin=cloudfront.S3OriginConfig(
+        # #             s3_bucket_source=bucket,
+        # #         ),
+        # #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        # #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        # #     ),
+        # #     certificate=cloudfront.Certificate.from_acm_certificate(
+        # #         acm_certificate=core.SecretValue.secrets_manager(
+        # #             "my/acm/cert", json_field="arn"
+        # #         ),
+        # #     ),
+        # #     domain_names=["example.com", "www.example.com"],
+        # # )
+
+
+        # ##################### CLOUDFRONT #####################
+
+        # distribution = cloudfront.CloudFrontWebDistribution(
+        #     self, 
         #     "MyDistribution",
-        #     default_behavior=cloudfront.BehaviorOptions(
-        #         origin=cloudfront.S3OriginConfig(
-        #             s3_bucket_source=bucket,
-        #         ),
-        #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-        #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        #     ),
-        #     certificate=cloudfront.Certificate.from_acm_certificate(
-        #         acm_certificate=core.SecretValue.secrets_manager(
-        #             "my/acm/cert", json_field="arn"
-        #         ),
-        #     ),
-        #     domain_names=["example.com", "www.example.com"],
+        #     origin_configs=[
+        #         cloudfront.SourceConfiguration(
+        #             s3_origin_source=cloudfront.S3OriginConfig(
+        #                 s3_bucket_source=bucket
+        #             ),
+        #             behaviors=[
+        #                 cloudfront.Behavior(
+        #                     is_default_behavior=True,
+        #                     default_ttl=Duration.seconds(60),
+        #                 )
+        #             ],
+        #         )
+        #     ],
+        #     # #TODO try me first
+        #     # alias_configuration=cloudfront.AliasConfiguration(
+        #     #     names=[fully_qualified_domain_name],
+        #     #     acm_cert_ref=certificate.certificate_arn,
+        #     #     security_policy=cloudfront.SecurityPolicyProtocol.SSL_V3,  # default
+        #     #     ssl_method=cloudfront.SSLMethod.SNI
+        #     #     ),
+        #     #TODO try me second
+        #     viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
+        #         certificate=certificate,
+        #         aliases=[fully_qualified_domain_name],
+        #         security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,  # default
+        #         ssl_method=cloudfront.SSLMethod.SNI
+        #         )
         # )
 
-
-        ##################### CLOUDFRONT #####################
-
-        distribution = cloudfront.CloudFrontWebDistribution(
-            self, 
-            "MyDistribution",
-            origin_configs=[
-                cloudfront.SourceConfiguration(
-                    s3_origin_source=cloudfront.S3OriginConfig(
-                        s3_bucket_source=bucket
-                    ),
-                    behaviors=[
-                        cloudfront.Behavior(
-                            is_default_behavior=True,
-                            default_ttl=Duration.seconds(60),
-                        )
-                    ],
-                )
-            ],
-            # #TODO try me first
-            # alias_configuration=cloudfront.AliasConfiguration(
-            #     names=[fully_qualified_domain_name],
-            #     acm_cert_ref=certificate.certificate_arn,
-            #     security_policy=cloudfront.SecurityPolicyProtocol.SSL_V3,  # default
-            #     ssl_method=cloudfront.SSLMethod.SNI
-            #     ),
-            #TODO try me second
-            viewer_certificate=cloudfront.ViewerCertificate.from_iam_certificate(
-                certificate.node.id,
-                aliases=[root_domain],
-                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,  # default
-                ssl_method=cloudfront.SSLMethod.SNI
-                )
-        )
+        # distribution.node.add_dependency(certificate)
+        # distribution.node.add_dependency(deployment)
 
 
-        ##################### DNS A RECORD #####################
+        # ##################### DNS A RECORD #####################
 
-        route53.ARecord(
-            self, 
-            "AliasRecord",
-            zone=zone,
-            record_name=subdomain,
-            target=route53.RecordTarget.from_alias(
-                route53_targets.CloudFrontTarget(distribution)
-            ),
-        )
+        # route53.ARecord(
+        #     self, 
+        #     "AliasRecord",
+        #     zone=zone,
+        #     record_name=subdomain,
+        #     target=route53.RecordTarget.from_alias(
+        #         route53_targets.CloudFrontTarget(distribution)
+        #     ),
+        # )

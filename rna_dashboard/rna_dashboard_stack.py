@@ -113,7 +113,7 @@ class RNADashboardStack(Stack):
             sources=[s3deploy.Source.asset(folder_to_deploy)],
             destination_bucket=bucket,
             distribution=distribution,
-            distribution_paths=["/*"], #invalidate all paths
+            distribution_paths=["/index.html,/assets/*"], #invalidate all paths
             memory_limit=1024, #without this it will just hang and not deploy with no error
         )
 

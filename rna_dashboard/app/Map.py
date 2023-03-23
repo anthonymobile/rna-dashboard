@@ -50,21 +50,26 @@ def fullscreen_map(base_url):
         tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False),
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
-    
-    # #BUG update to use Layer class
-    # # RNA Boundaries
-    # folium.GeoJson(
-    #     base_url,
-    #     "boundaries-rna",
-    #     name="RNA Boundaries",
-    #     style_function=lambda feature: {
-    #         'fillColor': 'none',
-    #         'color': 'green',
-    #         'weight': 10,
-    #         'opacity': 0.75,
-    #         'dashArray': '2, 2'
-    #     },
-    # ).add_to(m)
+
+    #  Layer class
+    # # 
+    folium.GeoJson(
+        Layer(
+            base_url,
+            "boundaries-rna",
+            popups=False,
+            tooltips=False
+        ).geojson,
+        name="Building Footprints",
+        style_function=lambda feature: {
+            'fillColor': 'none',
+            'color': 'green',
+            'weight': 8,
+            'opacity': 0.75,
+            'dashArray': '2, 2'
+        }
+    ).add_to(m)
+
 
 
     ############################################################

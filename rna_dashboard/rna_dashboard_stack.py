@@ -41,7 +41,7 @@ class RNADashboardStack(Stack):
         )
         
         certificate = acm.Certificate(
-            self, f"{cfg.stack_name}__FlaskFargateCertificate",
+            self, f"{cfg.stack_name}__Certificate",
             domain_name=fully_qualified_domain_name,
             validation=acm.CertificateValidation.from_dns(zone))
         
@@ -75,18 +75,12 @@ class RNADashboardStack(Stack):
         distribution.node.add_dependency(certificate)
         # distribution.node.add_dependency(deployment)
 
-        #TODO figure out how to run freeze
-        # ##################### BUILD THE SITE #####################
-        # # importing doesnt seem to work because the modules dont import correctly
-        # from app import app
-        # from flask_frozen import Freezer
-        # freezer = Freezer(app)
-
-        # app.config['FREEZER_BASE_URL'] = "http://localhost:5000"
-        # app.config['FREEZER_DESTINATION'] = "site_staging"
-
-        # freezer.freeze()
-
+        # #TODO figure out how to run freeze
+        # #FIXME 500 INTERNAL SERVER ERROR
+        # # ##################### BUILD THE SITE #####################
+        # # # importing doesnt seem to work because the modules dont import correctly
+        # import subprocess
+        # subprocess.run(['python', './rna_dashboard/app/freeze.py'])
 
 
         # ##################### CLOUDFRONT MODERN #####################

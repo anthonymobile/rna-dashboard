@@ -20,21 +20,13 @@ class RNADashboardStack(Stack):
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        ##################### MAP DATA BUCKET #####################
+        ##################### BUCKET #####################
         bucket_name=cfg.bucket_name 
-        folder_to_deploy = "site_staging"
 
         bucket = s3.Bucket(self,
             f"{cfg.stack_name}__Data_Bucket",
             bucket_name=bucket_name,
             public_read_access=True,
-        )
-
-        deployment = s3deploy.BucketDeployment(self, 
-            f"{cfg.stack_name}__Data_Bucket_Deployment",
-            sources=[s3deploy.Source.asset(folder_to_deploy)],
-            destination_bucket=bucket,
-            memory_limit=1024, #without this it will just hang and not deploy with no error
         )
 
         ##################### CERTIFICATE #####################
@@ -111,7 +103,20 @@ class RNADashboardStack(Stack):
         )
 
         distribution.node.add_dependency(certificate)
-        distribution.node.add_dependency(deployment)
+        # distribution.node.add_dependency(deployment)
+
+        ##################### CONTENT DEPLOYMENT #####################
+
+        folder_to_deploy = "site_staging"
+        deployment = s3deploy.BucketDeployment(self, 
+            f"{cfg.stack_name}__Data_Bucket_Deployment",
+            sources=[s3deploy.Source.asset(folder_to_deploy)],
+            destination_bucket=bucket,
+            distribution=distribution,
+            distribution_paths=["/*"], #invalidate all paths
+            memory_limit=1024, #without this it will just hang and not deploy with no error
+        )
+
 
 
         ##################### DNS A RECORD #####################

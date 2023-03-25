@@ -90,13 +90,6 @@ def fullscreen_map(base_url):
     folium.LayerControl().add_to(m)
 
     ############################################################
-    # CSS AND JS fOR STREETVIEW
-    ############################################################
-    m.get_root().header.add_child(CssLink('./static/style.css'))
-    m.get_root().html.add_child(JavascriptLink('./static/index.js'))
-    m.get_root().header.add_child(JavascriptLink('https://polyfill.io/v3/polyfill.min.js?features=default'))
-
-    ############################################################
     # RETURN MAP
     ############################################################
     return m

@@ -1,6 +1,5 @@
-import requests
+import requests, json
 from jinja2 import Environment, FileSystemLoader
-import json
 from shapely.geometry import shape
 from shapely.geometry.polygon import Polygon
 
@@ -41,8 +40,8 @@ class Layer():
             block=feature["properties"]["BLOCK"],
             lot=feature["properties"]["LOT"],
             streetview_url=self.render_streetview_url(feature),
-            jcportal_url=self.render_jcportal_url(feature),
             seeclickfix_url=self.render_seeclickfix_url(feature),
+            jcportal_url=self.render_jcportal_url(feature),
             )
 
     def render_tooltip(self, feature):
@@ -52,7 +51,7 @@ class Layer():
             # feature=feature
             )
     
-    def x_y_from_feature(feature):
+    def x_y_from_feature(self, feature):
         try:
             polygon: Polygon = shape(feature["geometry"])
             representative_point = polygon.representative_point()
@@ -63,7 +62,6 @@ class Layer():
             print (e)
             return None, None
 
-    #FIXME why does this work
     def render_streetview_url(self, feature):
         try:
             x, y = self.x_y_from_feature(feature)
@@ -72,14 +70,27 @@ class Layer():
             print (e)
             return None
     
-    #FIXME but this throws an error!
+
     def render_seeclickfix_url(self, feature):
         try:
             x, y = self.x_y_from_feature(feature)
-            return f"https://seeclickfix.com/api/v2/issues?lat={x}&lng={y}&zoom=18"
+            return f"https://seeclickfix.com/api/v2/issues?lat={y}&lng={x}&zoom=18"
         except Exception as e:
             print (e)
             return None
+
+    #FIXME fetch the data, format and insert it with links to the SCF content
+    #FIXME this will have to run / render on the server side, how to embed in JS to run on poup?
+    def render_seeclickfix_data(self, feature):
+
+        headers = {'Accept': 'application/json'}
+        r = requests.get('https://reqbin.com/echo/get/json', headers=headers)
+        data = r.json()
+        table = []
+        for issue in data["issues"]:
+            table.append('<li><a href="issue[url]">{issue["title"]}')
+        return table
+
         
     def render_jcportal_url(self, feature):
         try:

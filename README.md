@@ -5,24 +5,17 @@ This is a folium dashboard for a community in Jersey City, NJ. It is a static we
 ## features to add
 
 ### VIP
-- run seeclickfix query and display
-    - https://seeclickfix.com/api/v2/issues?lat=40.750650&lng=-74.042520&zoom=18
-- layers
-    - create RNA building footprints only and add back
-- build / stack
-    - automate the freeze process
+
 - layout
     change out float for a bottom full-width bar with simple big title
 - popups: more query shortcuts
     - NJparcels.com
     - SDL portal (need to get API access via city planning)
+- SCF issue display—populate with live data on popup
+- build / stack
+    - automate the freeze process
 - building footprints datum
     - check building footprints for datum shift and fix https://www.directionsmag.com/article/4048
-- add a spinning icon while map loads
-    - folium's plugin wrapper: https://python-visualization.github.io/folium/plugins.html
-        - maybe class folium.plugins.BeautifyIcon?
-    - extend folium by writing my own plugin wrapper for https://github.com/makinacorpus/Leaflet.Spin/ ?
-
 
 
 ### low priority

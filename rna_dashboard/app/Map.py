@@ -14,11 +14,12 @@ def fullscreen_map(base_url):
     # layers stack in order they are added (last=top)
     ############################################################
 
-    # Heights Building Footprints
+    # Building Footprints
     folium.GeoJson(
         Layer(
             base_url,
-            "heights-building-footprints",
+            #"heights-building-footprints",
+            "rna-building-footprints",
             popups=False,
             tooltips=False
         ).geojson,
@@ -30,12 +31,13 @@ def fullscreen_map(base_url):
             'dashArray': '3, 3'
         }
     ).add_to(m)
-    
-    # Heights Parcels
+
+    # Parcels
     folium.GeoJson(
         Layer(
             base_url,
-            "heights-parcels",
+            # "heights-parcels",
+            "rna-parcels",
             popups=True,
             tooltips=True
         ).geojson,
@@ -47,12 +49,12 @@ def fullscreen_map(base_url):
             'weight': 0.5,
             'opacity': 0.5
         },
+        control=False, #dont show in layer control
         tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False),
         popup=folium.GeoJsonPopup(fields=['popup'], labels=False)
     ).add_to(m)
 
-    #  Layer class
-    # # 
+     # RNA boundaries
     folium.GeoJson(
         Layer(
             base_url,
@@ -64,8 +66,8 @@ def fullscreen_map(base_url):
         style_function=lambda feature: {
             'fillColor': 'none',
             'color': 'green',
-            'weight': 8,
-            'opacity': 0.75,
+            'weight': 20,
+            'opacity': .5,
             'dashArray': '2, 2'
         }
     ).add_to(m)

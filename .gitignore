@@ -14,4 +14,5 @@ cdk.out
 .ipynb_checkpoints
 
 #content
-site_staging
+site_staging/*
+site_staging/index.html

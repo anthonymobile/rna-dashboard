@@ -5,13 +5,14 @@ This is a folium dashboard for a community in Jersey City, NJ. It is a static we
 ## features to add
 
 ### VIP
-
-- layout
-    change out float for a bottom full-width bar with simple big title
+- layout template
+    - change out float for a bottom full-width bar with simple big title
+    - (will need to do in folium, with jinja?)
 - popups: more query shortcuts
+    - debug SCF popup: issue display—populate with live data on popup
     - NJparcels.com
     - SDL portal (need to get API access via city planning)
-- SCF issue display—populate with live data on popup
+    - scrape JC planning google sheet (find the URL in the group archive?)
 - build / stack
     - automate the freeze process
 - building footprints datum
